@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
+
 using OpenSource.UPnP;
 using OpenSource.Utilities;
+
 using System.Diagnostics;
+using System.Dynamic;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -19,6 +22,7 @@ namespace Test.UPnP
             controlPoint.OnAddedDevice += controPoint_OnAddedDevice;
             controlPoint.OnRemovedDevice += controPoint_OnRemovedDevice;
             controlPoint.OnDeviceExpired += controPoint_OnDeviceExpired;
+
 
             while (true)
             {
@@ -40,9 +44,69 @@ namespace Test.UPnP
                     controlPoint.OnRemovedDevice += controPoint_OnRemovedDevice;
                     controlPoint.OnDeviceExpired += controPoint_OnDeviceExpired;
                 }
-
+                if (s == "s")
+                {
+                    // Simulate WeMo Switch
+                    AddWeMoSwitch();
+                }
             }
+        }
 
+        private static void AddWeMoSwitch()
+        {
+            var localDevice = UPnPDevice.CreateRootDevice(900, 2, "web\\");
+            //localDevice.Icon = null;
+            //localDevice.HasPresentation = true;
+            //localDevice.PresentationURL = presentationUrl;
+            localDevice.FriendlyName = "Livingroom Lamp";
+            localDevice.Manufacturer = "Belkin International Inc.";
+            localDevice.ManufacturerURL = "http://www.belkin.com";
+            localDevice.ModelName = "Socket";
+            localDevice.ModelDescription = "Belkin Plugin Socket 2.1";
+            localDevice.Major = 1; localDevice.Minor = 0;
+            /*if (Uri.IsWellFormedUriString(manufacturerUrl, UriKind.Absolute))
+            {
+                localDevice.ModelURL = new Uri(manufacturerUrl);
+            }
+            */
+            localDevice.ModelNumber = "1234";
+            localDevice.StandardDeviceType = "urn:Belkin:device:controllee";
+            //localDevice.UniqueDeviceName = "uniqueDeviceName";
+
+            // Create an instance of the BasicEvent service
+            dynamic instance = new ExpandoObject();
+            instance.Echo = new Func<string, string>((message) => {
+                return message;
+            });
+            instance.GetBinaryState = new Func<int>(() => {
+                return (new Random()).Next(0, 2);
+            });
+            instance.SetBinaryState = new Func<int, int>((binaryState) => {
+                return binaryState;
+            });
+
+            // Declare the "BasicEvent1" service
+            var service = new UPnPService(
+                // Version
+                1.0,
+                // Service ID
+                "urn:Belkin:serviceId:basicevent1",
+                // Service Type
+                "urn:Belkin:service:basicevent:1", 
+                // Standard Service?
+                true,
+                // Service Object Instance
+                instance
+            );
+            // Add the methods
+            service.AddMethod("Echo");
+            service.AddMethod("GetBinaryState");
+            service.AddMethod("SetBinaryState");
+
+            // Add the service
+            localDevice.AddService(service);
+            // Start the WeMo switch device UPnP simulator
+            localDevice.StartDevice();
         }
 
         private static void controPoint_OnAddedDevice(UpnpSmartControlPoint sender, UPnPDevice device)
@@ -59,7 +123,6 @@ namespace Test.UPnP
         {
             Console.WriteLine("Expired " + device.FriendlyName);
         }
-
     }
 
     #region UpnpSmartControlPoint helper class
@@ -82,6 +145,7 @@ namespace Test.UPnP
         private WeakEvent OnDeviceExpiredEvent = new WeakEvent();
         private WeakEvent OnRemovedDeviceEvent = new WeakEvent();
         private WeakEvent OnUpdatedDeviceEvent = new WeakEvent();
+
         private string searchFilter = "upnp:rootdevice";
         //"ssdp:all"; //
 
@@ -124,50 +188,26 @@ namespace Test.UPnP
 
         public event DeviceHandler OnAddedDevice
         {
-            add
-            {
-                this.OnAddedDeviceEvent.Register(value);
-            }
-            remove
-            {
-                this.OnAddedDeviceEvent.UnRegister(value);
-            }
+            add { this.OnAddedDeviceEvent.Register(value); }
+            remove { this.OnAddedDeviceEvent.UnRegister(value); }
         }
 
         public event DeviceHandler OnDeviceExpired
         {
-            add
-            {
-                this.OnDeviceExpiredEvent.Register(value);
-            }
-            remove
-            {
-                this.OnDeviceExpiredEvent.UnRegister(value);
-            }
+            add { this.OnDeviceExpiredEvent.Register(value); }
+            remove { this.OnDeviceExpiredEvent.UnRegister(value); }
         }
 
         public event DeviceHandler OnRemovedDevice
         {
-            add
-            {
-                this.OnRemovedDeviceEvent.Register(value);
-            }
-            remove
-            {
-                this.OnRemovedDeviceEvent.UnRegister(value);
-            }
+            add { this.OnRemovedDeviceEvent.Register(value); }
+            remove { this.OnRemovedDeviceEvent.UnRegister(value); }
         }
 
         public event DeviceHandler OnUpdatedDevice
         {
-            add
-            {
-                this.OnUpdatedDeviceEvent.Register(value);
-            }
-            remove
-            {
-                this.OnUpdatedDeviceEvent.UnRegister(value);
-            }
+            add { this.OnUpdatedDeviceEvent.Register(value); }
+            remove { this.OnUpdatedDeviceEvent.UnRegister(value); }
         }
 
         private void DeviceFactoryCreationSink(UPnPDeviceFactory sender, UPnPDevice device, Uri locationURL)
@@ -175,19 +215,22 @@ namespace Test.UPnP
             //Console.WriteLine("UPnPDevice[" + device.FriendlyName + "]@" + device.LocationURL + " advertised UDN[" + device.UniqueDeviceName + "]");
             if (!this.deviceTable.Contains(device.UniqueDeviceName))
             {
-                EventLogger.Log(this, EventLogEntryType.Error, "UPnPDevice[" + device.FriendlyName + "]@" + device.LocationURL + " advertised UDN[" + device.UniqueDeviceName + "] in xml but not in SSDP");
+                EventLogger.Log(this, EventLogEntryType.Error,
+                    "UPnPDevice[" + device.FriendlyName + "]@" + device.LocationURL + " advertised UDN[" +
+                    device.UniqueDeviceName + "] in xml but not in SSDP");
             }
             else
             {
                 lock (this.deviceTableLock)
                 {
-                    DeviceInfo info2 = (DeviceInfo)this.deviceTable[device.UniqueDeviceName];
+                    DeviceInfo info2 = (DeviceInfo) this.deviceTable[device.UniqueDeviceName];
                     if (info2.Device != null)
                     {
-                        EventLogger.Log(this, EventLogEntryType.Information, "Unexpected UPnP Device Creation: " + device.FriendlyName + "@" + device.LocationURL);
+                        EventLogger.Log(this, EventLogEntryType.Information,
+                            "Unexpected UPnP Device Creation: " + device.FriendlyName + "@" + device.LocationURL);
                         return;
                     }
-                    DeviceInfo info = (DeviceInfo)this.deviceTable[device.UniqueDeviceName];
+                    DeviceInfo info = (DeviceInfo) this.deviceTable[device.UniqueDeviceName];
                     info.Device = device;
                     this.deviceTable[device.UniqueDeviceName] = info;
                     this.deviceLifeTimeClock.Add(device.UniqueDeviceName, device.ExpirationTimeout);
@@ -206,7 +249,7 @@ namespace Test.UPnP
                 {
                     return;
                 }
-                info = (DeviceInfo)this.deviceTable[obj];
+                info = (DeviceInfo) this.deviceTable[obj];
                 this.deviceTable.Remove(obj);
                 this.deviceUpdateClock.Remove(obj);
                 if (this.activeDeviceList.Contains(info.Device))
@@ -231,7 +274,7 @@ namespace Test.UPnP
             {
                 if (this.deviceTable.ContainsKey(obj))
                 {
-                    DeviceInfo info = (DeviceInfo)this.deviceTable[obj];
+                    DeviceInfo info = (DeviceInfo) this.deviceTable[obj];
                     if (info.PendingBaseURL != null)
                     {
                         info.BaseURL = info.PendingBaseURL;
@@ -249,7 +292,7 @@ namespace Test.UPnP
 
         public UPnPDevice[] GetCurrentDevices()
         {
-            return (UPnPDevice[])this.activeDeviceList.ToArray(typeof(UPnPDevice));
+            return (UPnPDevice[]) this.activeDeviceList.ToArray(typeof(UPnPDevice));
         }
 
         private void NetworkInfoNewInterfaceSink(NetworkInfo sender, IPAddress Intfce)
@@ -314,14 +357,15 @@ namespace Test.UPnP
                 IDictionaryEnumerator enumerator = this.deviceTable.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    string key = (string)enumerator.Key;
+                    string key = (string) enumerator.Key;
                     this.deviceLifeTimeClock.Add(key, 20);
                 }
             }
             this.genericControlPoint.FindDeviceAsync(searchFilter);
         }
 
-        internal void SSDPNotifySink(IPEndPoint source, IPEndPoint local, Uri LocationURL, bool IsAlive, string USN, string SearchTarget, int MaxAge, HTTPMessage Packet)
+        internal void SSDPNotifySink(IPEndPoint source, IPEndPoint local, Uri LocationURL, bool IsAlive, string USN,
+            string SearchTarget, int MaxAge, HTTPMessage Packet)
         {
             UPnPDevice device = null;
             if (SearchTarget == searchFilter)
@@ -360,7 +404,7 @@ namespace Test.UPnP
                         }
                         else
                         {
-                            DeviceInfo info2 = (DeviceInfo)this.deviceTable[USN];
+                            DeviceInfo info2 = (DeviceInfo) this.deviceTable[USN];
                             if (info2.Device != null)
                             {
                                 if (info2.BaseURL.Equals(LocationURL))
@@ -405,7 +449,7 @@ namespace Test.UPnP
             UPnPDevice device = null;
             try
             {
-                DeviceInfo info = (DeviceInfo)this.deviceTable[UDN];
+                DeviceInfo info = (DeviceInfo) this.deviceTable[UDN];
                 device = info.Device;
                 this.deviceTable.Remove(UDN);
                 this.deviceLifeTimeClock.Remove(info.UDN);
@@ -418,7 +462,8 @@ namespace Test.UPnP
             return device;
         }
 
-        private void UPnPControlPointSearchSink(IPEndPoint source, IPEndPoint local, Uri LocationURL, string USN, string SearchTarget, int MaxAge)
+        private void UPnPControlPointSearchSink(IPEndPoint source, IPEndPoint local, Uri LocationURL, string USN,
+            string SearchTarget, int MaxAge)
         {
             lock (this.deviceTableLock)
             {
@@ -437,7 +482,7 @@ namespace Test.UPnP
                 }
                 else
                 {
-                    DeviceInfo info2 = (DeviceInfo)this.deviceTable[USN];
+                    DeviceInfo info2 = (DeviceInfo) this.deviceTable[USN];
                     if (info2.Device != null)
                     {
                         if (info2.BaseURL.Equals(LocationURL))
@@ -484,5 +529,4 @@ namespace Test.UPnP
     }
 
     #endregion
-
 }

@@ -443,7 +443,7 @@ namespace OpenSource.UPnP
             {
                 sbuf = "HTTP/" + Version + " " + ResponseCode.ToString() + " " + ResponseData + "\r\n";
             }
-            while (en.MoveNext())
+            while (en.MoveNext() && en.Value != null)
             {
                 if ((String)en.Key != "CONTENT-LENGTH" || OverrideContentLength == true)
                 {

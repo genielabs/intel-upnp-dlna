@@ -5,6 +5,7 @@
 [Rr]eleases/
 [Bb]in/
 [Oo]bj/
+.idea/
 
 *.userprefs
 *.suo

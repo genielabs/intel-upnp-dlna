@@ -1987,13 +1987,14 @@ namespace OpenSource.UPnP
             get
             {
                 string result = "";
-                if (DeviceURN.Length > 29 && DeviceURN.Substring(0, 28) == "urn:schemas-upnp-org:device:")
+                if (DeviceURN.StartsWith("urn:schemas-upnp-org:device:") || DeviceURN.StartsWith("urn:Belkin:device:"))
                     result = DeviceURN.Split(':')[3];
                 return result;
             }
             set
             {
-                DeviceURN = string.Format("urn:schemas-upnp-org:device:{0}:{1}", value, Version);
+                // small hack to allow custom URN
+                DeviceURN = string.Format("{0}{1}:{2}", value.StartsWith("urn:") ? "" : "urn:schemas-upnp-org:device:", value, Version);
             }
         }
 
@@ -2810,7 +2811,7 @@ namespace OpenSource.UPnP
             XDoc.Indentation = 3;
 
             XDoc.WriteStartDocument();
-            XDoc.WriteStartElement("root", "urn:schemas-upnp-org:device-1-0");
+            XDoc.WriteStartElement("root", (DeviceURN.StartsWith("urn:Belkin") ? "urn:Belkin:device" : "urn:schemas-upnp-org:device") + "-1-0");
             if (_BootID != "")
             {
                 XDoc.WriteAttributeString("configId", this._BootID);

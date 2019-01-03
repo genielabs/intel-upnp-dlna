@@ -21,8 +21,11 @@ using System.Net;
 using System.Threading;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Net.Sockets;
 using OpenSource.Utilities;
+using System.Linq;
 
 namespace OpenSource.UPnP
 {
@@ -3868,7 +3871,20 @@ namespace OpenSource.UPnP
             bool DontCreate = false;
             ESV = this.GetStateVariables();
             UPnPStateVariable sv;
-            MethodInfo minfo = ServiceInstance.GetType().GetMethod(MethodName);
+            MethodInfo minfo;
+            if (ServiceInstance is ExpandoObject)
+            {
+                if (!((IDictionary<string,object>)ServiceInstance).ContainsKey(MethodName))
+                {
+                    throw (new Exception(MethodName + " does not exist in dynamic object (" + ServiceInstance.GetType().ToString() + ")"));
+                }
+                var dynamicMethod = (Delegate)((IDictionary<string,object>)ServiceInstance)[MethodName];
+                minfo = dynamicMethod.Method;
+            }
+            else
+            {
+                minfo = ServiceInstance.GetType().GetMethod(MethodName);
+            }
             if (minfo == null)
             {
                 throw (new Exception(MethodName + " does not exist in " + ServiceInstance.GetType().ToString()));
