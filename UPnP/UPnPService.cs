@@ -3799,7 +3799,15 @@ namespace OpenSource.UPnP
             }
 
             Object RetVal = null;
-            RetVal = x.Invoke(ServiceInstance, InVarArr);
+            if (ServiceInstance is ExpandoObject)
+            {
+                var dynamicMethod = (Delegate)((IDictionary<string,object>)ServiceInstance)[MethodName];
+                RetVal = dynamicMethod.DynamicInvoke(InVarArr);
+            }
+            else
+            {
+                RetVal = x.Invoke(ServiceInstance, InVarArr);
+            }
 
             VarList.Clear();
             for (int id = 0; id < InVarArr.Length; ++id)

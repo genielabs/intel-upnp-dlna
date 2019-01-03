@@ -23,7 +23,6 @@ namespace Test.UPnP
             controlPoint.OnRemovedDevice += controPoint_OnRemovedDevice;
             controlPoint.OnDeviceExpired += controPoint_OnDeviceExpired;
 
-
             while (true)
             {
                 //Thread.Sleep(1000);
@@ -31,18 +30,11 @@ namespace Test.UPnP
                 var s = Console.ReadLine();
                 if (s == "-" && controlPoint != null)
                 {
-                    controlPoint.ShutDown();
-                    controlPoint.OnAddedDevice -= controPoint_OnAddedDevice;
-                    controlPoint.OnRemovedDevice -= controPoint_OnRemovedDevice;
-                    controlPoint.OnDeviceExpired -= controPoint_OnDeviceExpired;
-                    controlPoint = null;
+                    StopControlPoint(controlPoint);
                 }
                 if (s == "+")
                 {
-                    controlPoint = new UpnpSmartControlPoint();
-                    controlPoint.OnAddedDevice += controPoint_OnAddedDevice;
-                    controlPoint.OnRemovedDevice += controPoint_OnRemovedDevice;
-                    controlPoint.OnDeviceExpired += controPoint_OnDeviceExpired;
+                    StartControlPoint(controlPoint);
                 }
                 if (s == "s")
                 {
@@ -52,9 +44,27 @@ namespace Test.UPnP
             }
         }
 
+        private static void StartControlPoint(UpnpSmartControlPoint controlPoint)
+        {
+            StopControlPoint(controlPoint);
+            controlPoint = new UpnpSmartControlPoint();
+            controlPoint.OnAddedDevice += controPoint_OnAddedDevice;
+            controlPoint.OnRemovedDevice += controPoint_OnRemovedDevice;
+            controlPoint.OnDeviceExpired += controPoint_OnDeviceExpired;
+        }
+
+        private static void StopControlPoint(UpnpSmartControlPoint controlPoint)
+        {
+            controlPoint.ShutDown();
+            controlPoint.OnAddedDevice -= controPoint_OnAddedDevice;
+            controlPoint.OnRemovedDevice -= controPoint_OnRemovedDevice;
+            controlPoint.OnDeviceExpired -= controPoint_OnDeviceExpired;
+            controlPoint = null;
+        }
+
         private static void AddWeMoSwitch()
         {
-            var localDevice = UPnPDevice.CreateRootDevice(900, 2, "web\\");
+            var localDevice = UPnPDevice.CreateRootDevice(120, 2, "web\\");
             //localDevice.Icon = null;
             //localDevice.HasPresentation = true;
             //localDevice.PresentationURL = presentationUrl;
