@@ -17,17 +17,6 @@ limitations under the License.
 using System;
 using System.IO;
 using System.Net;
-using System.Xml;
-using System.Text;
-using System.Collections;
-using System.Net.Sockets;
-using System.IO.Compression;
-using System.Xml.Serialization;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
 namespace OpenSource.UPnP

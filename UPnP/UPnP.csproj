@@ -96,14 +96,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.Data">
-      <Name>System.Data</Name>
-    </Reference>
-    <Reference Include="System.Security" />
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
