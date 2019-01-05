@@ -22,6 +22,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace OpenSource.UPnP
 {
@@ -428,7 +429,7 @@ namespace OpenSource.UPnP
             parent = null;
             HasPresentation = true;
             ControlPointOnly = false;
-            RootPath = "";
+            RootPath = null;
 
             if (version == 0)
             {
@@ -1070,7 +1071,6 @@ namespace OpenSource.UPnP
                 WebSession.InternalStateObject = new Object[3] { vd, vdobj, P_cb };
                 if (H_cb != null)
                     H_cb(this, _msg, WebSession, vd);
-                return;
             }
         }
 
@@ -1428,6 +1428,7 @@ namespace OpenSource.UPnP
                 return (msg);
             }
 
+            if (RootPath != null)
             try
             {
                 FileStream fs = new FileStream(RootPath + GetWhat, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -1457,6 +1458,7 @@ namespace OpenSource.UPnP
                 OpenSource.Utilities.EventLogger.Log(ex);
                 throw (new UPnPCustomException(404, "File Not Found"));
             }
+            throw (new UPnPCustomException(404, "File Not Found"));
         }
 
         private void HandleSearch(String ST, IPEndPoint src, IPEndPoint local)
@@ -1485,12 +1487,24 @@ namespace OpenSource.UPnP
                 msg = new HTTPMessage();
                 msg.StatusCode = 200;
                 msg.StatusData = "OK";
-                msg.AddTag("ST", "upnp:rootdevice");
-                msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::upnp:rootdevice");
+                string st = DeviceURN;
+                Regex regex = new Regex(@"urn:([^:]*):device:");
+                Match match = regex.Match(st);
+                if (match.Success)
+                {
+                    st = match.Groups[0] + "**";
+                }
+                msg.AddTag("OPT", "http://schemas.upnp.org/upnp/1/0/\"; ns=01");
                 msg.AddTag("Location", Location);
                 msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                 msg.AddTag("EXT", "");
                 msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+                msg.AddTag("ST", st);
+                msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + st);
+                // TODO: !! IMPORTANT !!
+                // TODO: make "X-User-Agent" parametrizable
+                // TODO: !! IMPORTANT !!
+                msg.AddTag("X-User-Agent", "redsonic");
                 ResponseList.Add(msg);
             }
 
@@ -1634,7 +1648,7 @@ namespace OpenSource.UPnP
 
             for (int id = 0; id < Services.Length; ++id)
             {
-                if (Services[id].EventURL == MethodData)
+                if (Services[id].EventURL.TrimStart('/') == MethodData.TrimStart('/'))
                 {
                     response2 = Services[id]._SubscribeEvent(out SID, CallbackURL, Timeout);
                     IsOK = true;
@@ -1699,7 +1713,7 @@ namespace OpenSource.UPnP
 
             for (id = 0; id < Services.Length; ++id)
             {
-                if (Services[id].ControlURL == Control)
+                if (Services[id].ControlURL.TrimStart('/') == Control.TrimStart('/'))
                 {
                     if (MethodTag != "QueryStateVariable")
                     {
@@ -1987,7 +2001,9 @@ namespace OpenSource.UPnP
             get
             {
                 string result = "";
-                if (DeviceURN.StartsWith("urn:schemas-upnp-org:device:") || DeviceURN.StartsWith("urn:Belkin:device:"))
+                Regex regex = new Regex(@"urn:([^:]*):device:");
+                Match match = regex.Match(DeviceURN);
+                if (match.Success)
                     result = DeviceURN.Split(':')[3];
                 return result;
             }
@@ -2811,7 +2827,14 @@ namespace OpenSource.UPnP
             XDoc.Indentation = 3;
 
             XDoc.WriteStartDocument();
-            XDoc.WriteStartElement("root", (DeviceURN.StartsWith("urn:Belkin") ? "urn:Belkin:device" : "urn:schemas-upnp-org:device") + "-1-0");
+            string ns = "schemas-upnp-org";
+            Regex regex = new Regex(@"urn:([^:]*):device:");
+            Match match = regex.Match(DeviceURN);
+            if (match.Success)
+            {
+                ns = match.Groups[1].Value;
+            }
+            XDoc.WriteStartElement("root", "urn:"+ns+":device-1-0");
             if (_BootID != "")
             {
                 XDoc.WriteAttributeString("configId", this._BootID);

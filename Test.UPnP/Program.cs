@@ -64,37 +64,29 @@ namespace Test.UPnP
 
         private static void AddWeMoSwitch()
         {
-            var localDevice = UPnPDevice.CreateRootDevice(120, 2, "web\\");
+            var localDevice = UPnPDevice.CreateRootDevice(600, 2, null);
+            localDevice.StandardDeviceType = "urn:Belkin:device:controllee";
+            localDevice.ModelNumber = "3.1234";
+            localDevice.UniqueDeviceName = "Lightswitch-"+localDevice.UniqueDeviceName;
             //localDevice.Icon = null;
             //localDevice.HasPresentation = true;
             //localDevice.PresentationURL = presentationUrl;
-            localDevice.FriendlyName = "Livingroom Lamp";
+            localDevice.FriendlyName = "Test Lamp";
             localDevice.Manufacturer = "Belkin International Inc.";
-            localDevice.ManufacturerURL = "http://www.belkin.com";
+            //localDevice.ManufacturerURL = "http://www.belkin.com";
             localDevice.ModelName = "Socket";
             localDevice.ModelDescription = "Belkin Plugin Socket 2.1";
             localDevice.Major = 1; localDevice.Minor = 0;
+            localDevice.SerialNumber = "1234567890";
             /*if (Uri.IsWellFormedUriString(manufacturerUrl, UriKind.Absolute))
             {
                 localDevice.ModelURL = new Uri(manufacturerUrl);
             }
             */
-            localDevice.ModelNumber = "1234";
-            localDevice.StandardDeviceType = "urn:Belkin:device:controllee";
-            //localDevice.UniqueDeviceName = "uniqueDeviceName";
 
             // Create an instance of the BasicEvent service
             dynamic instance = new ExpandoObject();
-            instance.Echo = new Func<string, string>((message) => {
-                return message;
-            });
-            instance.GetBinaryState = new Func<int>(() => {
-                return (new Random()).Next(0, 2);
-            });
-            instance.SetBinaryState = new Func<int, int>((binaryState) => {
-                return binaryState;
-            });
-
+            
             // Declare the "BasicEvent1" service
             var service = new UPnPService(
                 // Version
@@ -108,11 +100,26 @@ namespace Test.UPnP
                 // Service Object Instance
                 instance
             );
-            // Add the methods
-            service.AddMethod("Echo");
-            service.AddMethod("GetBinaryState");
-            service.AddMethod("SetBinaryState");
+            //service.SCPDURL = "/eventservice.xml";
+            //service.ControlURL = "/upnp/control/basicevent1";
+            //service.EventURL = "/upnp/event/basicevent1";
+            
+            string stateVarName = "BinaryState";
+            var stateVariable = new UPnPStateVariable(stateVarName, typeof(bool), true);
+            stateVariable.AddAssociation("GetBinaryState", stateVarName);
+            stateVariable.AddAssociation("SetBinaryState", stateVarName);
+            stateVariable.Value = false;
+            service.AddStateVariable(stateVariable);
+            
+            instance.GetBinaryState = new Func<bool>(() => (bool)service.GetStateVariable(stateVarName));
+            instance.SetBinaryState = new Action<int>((BinaryState) => {
+                service.SetStateVariable(stateVarName, BinaryState != 0);
+            });
 
+            // Add the methods
+            service.AddMethod("GetBinaryState", stateVarName);
+            service.AddMethod("SetBinaryState", stateVarName);
+            
             // Add the service
             localDevice.AddService(service);
             // Start the WeMo switch device UPnP simulator

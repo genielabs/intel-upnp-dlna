@@ -25,7 +25,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Net.Sockets;
 using OpenSource.Utilities;
-using System.Linq;
 
 namespace OpenSource.UPnP
 {
@@ -1819,14 +1818,16 @@ namespace OpenSource.UPnP
             }
         }
 
-        internal String SCPDURL;
+        public String SCPDURL;
 
-        internal String ControlURL
+        public String ControlURL
         {
             get
             {
                 if (__controlurl == null)
                     return ("");
+                return __controlurl;
+                /*
                 int x = __controlurl.LastIndexOf("/");
                 if (x == -1)
                 {
@@ -1836,6 +1837,7 @@ namespace OpenSource.UPnP
                 {
                     return (__controlurl.Substring(x + 1));
                 }
+                */
             }
             set
             {
@@ -1843,12 +1845,14 @@ namespace OpenSource.UPnP
             }
         }
 
-        internal String EventURL
+        public String EventURL
         {
             get
             {
                 if (__eventurl == null)
                     return ("");
+                return __eventurl;
+                /*
                 int x = __eventurl.LastIndexOf("/");
                 if (x == -1)
                 {
@@ -1858,6 +1862,7 @@ namespace OpenSource.UPnP
                 {
                     return (__eventurl.Substring(x + 1));
                 }
+                */
             }
             set
             {
@@ -3872,9 +3877,9 @@ namespace OpenSource.UPnP
         /// Add a method to expose in this service
         /// </summary>
         /// <param name="MethodName">The name of the method to expose</param>
-        public void AddMethod(String MethodName)
+        public void AddMethod(String MethodName, String retValName = "_ReturnValue")
         {
-            string retname = "_ReturnValue";
+            string retname = retValName;
             UPnPStateVariable[] ESV;
             bool DontCreate = false;
             ESV = this.GetStateVariables();
