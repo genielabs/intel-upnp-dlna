@@ -2145,7 +2145,7 @@ namespace OpenSource.UPnP
             msg.AddTag("NT", "upnp:rootdevice");
             msg.AddTag("NTS", "ssdp:alive");
             msg.AddTag("Location", BaseURL);
-            msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + st);
+            msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::upnp:rootdevice");
             msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
             msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
             if (UserAgentTag != null)
@@ -2238,7 +2238,7 @@ namespace OpenSource.UPnP
             msg.AddTag("Host", Utils.GetMulticastAddrBraketPort(local));
             msg.AddTag("NT", "upnp:rootdevice");
             msg.AddTag("NTS", "ssdp:byebye");
-            msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + st);
+            msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::upnp:rootdevice");
             if (UserAgentTag != null)
             {
                 msg.AddTag("X-User-Agent", UserAgentTag);

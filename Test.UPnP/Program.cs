@@ -64,25 +64,26 @@ namespace Test.UPnP
 
         private static void AddWeMoSwitch()
         {
-            var localDevice = UPnPDevice.CreateRootDevice( /* expiration */ 600, /* version*/ 1, /* web dir */ null);
+            var localDevice = UPnPDevice.CreateRootDevice( /* expiration */ 3600, /* version*/ 1, /* web dir */ null);
             localDevice.StandardDeviceType = "urn:Belkin:device:controllee";
-            localDevice.ModelNumber = "3.1234";
-            localDevice.UniqueDeviceName = "Lightswitch-"+localDevice.UniqueDeviceName;
+            localDevice.UniqueDeviceName = "Lightswitch-32f9a52c-79d2-4ae2-8957-1f5a0f044e36";
+            localDevice.FriendlyName = "Test Lamp";
             //localDevice.Icon = null;
             //localDevice.HasPresentation = true;
             //localDevice.PresentationURL = presentationUrl;
-            localDevice.FriendlyName = "Test Lamp";
-            localDevice.Manufacturer = "Belkin International Inc.";
-            //localDevice.ManufacturerURL = "http://www.belkin.com";
-            localDevice.ModelName = "Socket";
-            localDevice.ModelDescription = "Belkin Plugin Socket 2.1";
             localDevice.Major = 1; localDevice.Minor = 0;
             localDevice.SerialNumber = "1234567890";
+            localDevice.ModelNumber = "3.1234";
+            localDevice.Manufacturer = "Belkin International Inc.";
+            localDevice.ManufacturerURL = "http://www.belkin.com";
+            localDevice.ModelName = "Socket";
+            localDevice.ModelDescription = "Belkin Plugin Socket 1.0";
             /*if (Uri.IsWellFormedUriString(manufacturerUrl, UriKind.Absolute))
             {
                 localDevice.ModelURL = new Uri(manufacturerUrl);
             }
             */
+            localDevice.UserAgentTag = "redsonic";
 
             // Create an instance of the BasicEvent service
             dynamic instance = new ExpandoObject();
@@ -100,9 +101,9 @@ namespace Test.UPnP
                 // Service Object Instance
                 instance
             );
-            //service.SCPDURL = "/eventservice.xml";
-            //service.ControlURL = "/upnp/control/basicevent1";
-            //service.EventURL = "/upnp/event/basicevent1";
+            service.ControlURL = "/upnp/control/basicevent1";
+            service.EventURL = "/upnp/event/basicevent1";
+            service.SCPDURL = "/eventservice.xml";
             
             string stateVarName = "BinaryState";
             var stateVariable = new UPnPStateVariable(stateVarName, typeof(bool), true);
@@ -113,6 +114,7 @@ namespace Test.UPnP
             
             instance.GetBinaryState = new Func<bool>(() => (bool)service.GetStateVariable(stateVarName));
             instance.SetBinaryState = new Action<int>((BinaryState) => {
+                Console.WriteLine("SetBinaryState({0})", BinaryState);
                 service.SetStateVariable(stateVarName, BinaryState != 0);
             });
 
