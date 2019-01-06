@@ -143,6 +143,7 @@ namespace OpenSource.UPnP
 
         public String ProprietaryDeviceType;
         public IPAddress InterfaceToHost;
+        public string UserAgentTag;
         private String RootPath;
         private bool ControlPointOnly;
         private string __DeviceURN;
@@ -1481,19 +1482,20 @@ namespace OpenSource.UPnP
                 xx = xx.Substring(0, xx.IndexOf("%"));
                 Location = "http://[" + xx + "]:" + ((MiniWebServer)WebServerTable[local.Address.ToString()]).LocalIPEndPoint.Port.ToString() + "/";
             }
+            
+            string st = DeviceURN;
+            Regex regex = new Regex(@"urn:([^:]*):device:");
+            Match match = regex.Match(st);
+            if (match.Success)
+            {
+                st = match.Groups[0] + "**";
+            }
 
-            if ((ST == "upnp:rootdevice") || (ST == "ssdp:all"))
+            if ((ST == st) || (ST == "upnp:rootdevice") || (ST == "ssdp:all"))
             {
                 msg = new HTTPMessage();
                 msg.StatusCode = 200;
                 msg.StatusData = "OK";
-                string st = DeviceURN;
-                Regex regex = new Regex(@"urn:([^:]*):device:");
-                Match match = regex.Match(st);
-                if (match.Success)
-                {
-                    st = match.Groups[0] + "**";
-                }
                 msg.AddTag("OPT", "http://schemas.upnp.org/upnp/1/0/\"; ns=01");
                 msg.AddTag("Location", Location);
                 msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
@@ -1501,10 +1503,10 @@ namespace OpenSource.UPnP
                 msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
                 msg.AddTag("ST", st);
                 msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + st);
-                // TODO: !! IMPORTANT !!
-                // TODO: make "X-User-Agent" parametrizable
-                // TODO: !! IMPORTANT !!
-                msg.AddTag("X-User-Agent", "redsonic");
+                if (UserAgentTag != null)
+                {
+                    msg.AddTag("X-User-Agent", UserAgentTag);
+                }
                 ResponseList.Add(msg);
             }
 
@@ -1805,6 +1807,10 @@ namespace OpenSource.UPnP
             response.AddTag("Content-Type", "text/xml; charset=\"utf-8\"");
             response.AddTag("EXT", "");
             response.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
+            if (UserAgentTag != null)
+            {
+                response.AddTag("X-User-Agent", UserAgentTag);
+            }
             response.BodyBuffer = wbuf;
             return (response);
         }
@@ -2124,6 +2130,14 @@ namespace OpenSource.UPnP
                 BaseURL = "http://" + localep.Address.ToString() + ":" + localep.Port.ToString() + "/";
             }
 
+            string st = DeviceURN;
+            Regex regex = new Regex(@"urn:([^:]*):device:");
+            Match match = regex.Match(st);
+            if (match.Success)
+            {
+                st = match.Groups[0] + "**";
+            }
+
             msg = new HTTPMessage();
             msg.Directive = "NOTIFY";
             msg.DirectiveObj = "*";
@@ -2131,9 +2145,13 @@ namespace OpenSource.UPnP
             msg.AddTag("NT", "upnp:rootdevice");
             msg.AddTag("NTS", "ssdp:alive");
             msg.AddTag("Location", BaseURL);
-            msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::upnp:rootdevice");
+            msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + st);
             msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
             msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+            if (UserAgentTag != null)
+            {
+                msg.AddTag("X-User-Agent", UserAgentTag);
+            }
             NotifyList.Add(msg);
 
             BuildNotifyPacket2(BaseURL, NotifyList, local);
@@ -2162,6 +2180,10 @@ namespace OpenSource.UPnP
                 msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + Services[id].ServiceURN);
                 msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                 msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+                if (UserAgentTag != null)
+                {
+                    msg.AddTag("X-User-Agent", UserAgentTag);
+                }
                 NotifyList.Add(msg);
             }
             msg = new HTTPMessage();
@@ -2174,6 +2196,10 @@ namespace OpenSource.UPnP
             msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + DeviceURN);
             msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
             msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+            if (UserAgentTag != null)
+            {
+                msg.AddTag("X-User-Agent", UserAgentTag);
+            }
             NotifyList.Add(msg);
 
             msg = new HTTPMessage();
@@ -2186,6 +2212,10 @@ namespace OpenSource.UPnP
             msg.AddTag("USN", "uuid:" + UniqueDeviceName);
             msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
             msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+            if (UserAgentTag != null)
+            {
+                msg.AddTag("X-User-Agent", UserAgentTag);
+            }
             NotifyList.Add(msg);
         }
 
@@ -2194,13 +2224,25 @@ namespace OpenSource.UPnP
             HTTPMessage msg;
             ArrayList ByeList = new ArrayList();
 
+            string st = DeviceURN;
+            Regex regex = new Regex(@"urn:([^:]*):device:");
+            Match match = regex.Match(st);
+            if (match.Success)
+            {
+                st = match.Groups[0] + "**";
+            }
+
             msg = new HTTPMessage();
             msg.Directive = "NOTIFY";
             msg.DirectiveObj = "*";
             msg.AddTag("Host", Utils.GetMulticastAddrBraketPort(local));
             msg.AddTag("NT", "upnp:rootdevice");
             msg.AddTag("NTS", "ssdp:byebye");
-            msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::upnp:rootdevice");
+            msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + st);
+            if (UserAgentTag != null)
+            {
+                msg.AddTag("X-User-Agent", UserAgentTag);
+            }
             ByeList.Add(msg);
 
             BuildByePacket2(ByeList, local);
@@ -2225,6 +2267,10 @@ namespace OpenSource.UPnP
                 msg.AddTag("NT", Services[id].ServiceURN);
                 msg.AddTag("NTS", "ssdp:byebye");
                 msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + Services[id].ServiceURN);
+                if (UserAgentTag != null)
+                {
+                    msg.AddTag("X-User-Agent", UserAgentTag);
+                }
                 ByeList.Add(msg);
             }
             msg = new HTTPMessage();
@@ -2234,6 +2280,10 @@ namespace OpenSource.UPnP
             msg.AddTag("NT", DeviceURN);
             msg.AddTag("NTS", "ssdp:byebye");
             msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + DeviceURN);
+            if (UserAgentTag != null)
+            {
+                msg.AddTag("X-User-Agent", UserAgentTag);
+            }
             ByeList.Add(msg);
 
             msg = new HTTPMessage();
@@ -2243,6 +2293,10 @@ namespace OpenSource.UPnP
             msg.AddTag("NT", "uuid:" + UniqueDeviceName);
             msg.AddTag("NTS", "ssdp:byebye");
             msg.AddTag("USN", "uuid:" + UniqueDeviceName);
+            if (UserAgentTag != null)
+            {
+                msg.AddTag("X-User-Agent", UserAgentTag);
+            }
             ByeList.Add(msg);
         }
 
@@ -2737,6 +2791,10 @@ namespace OpenSource.UPnP
                 msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                 msg.AddTag("EXT", "");
                 msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+                if (UserAgentTag != null)
+                {
+                    msg.AddTag("X-User-Agent", UserAgentTag);
+                }
                 ResponseList.Add(msg);
 
                 msg = new HTTPMessage();
@@ -2748,6 +2806,10 @@ namespace OpenSource.UPnP
                 msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                 msg.AddTag("EXT", "");
                 msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+                if (UserAgentTag != null)
+                {
+                    msg.AddTag("X-User-Agent", UserAgentTag);
+                }
                 ResponseList.Add(msg);
             }
 
@@ -2762,6 +2824,10 @@ namespace OpenSource.UPnP
                 msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                 msg.AddTag("EXT", "");
                 msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+                if (UserAgentTag != null)
+                {
+                    msg.AddTag("X-User-Agent", UserAgentTag);
+                }
                 ResponseList.Add(msg);
             }
 
@@ -2776,6 +2842,10 @@ namespace OpenSource.UPnP
                 msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                 msg.AddTag("EXT", "");
                 msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+                if (UserAgentTag != null)
+                {
+                    msg.AddTag("X-User-Agent", UserAgentTag);
+                }
                 ResponseList.Add(msg);
             }
 
@@ -2792,6 +2862,10 @@ namespace OpenSource.UPnP
                     msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                     msg.AddTag("EXT", "");
                     msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+                    if (UserAgentTag != null)
+                    {
+                        msg.AddTag("X-User-Agent", UserAgentTag);
+                    }
                     ResponseList.Add(msg);
                 }
                 if (s.ServiceURN == ST)
@@ -2805,6 +2879,10 @@ namespace OpenSource.UPnP
                     msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                     msg.AddTag("EXT", "");
                     msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
+                    if (UserAgentTag != null)
+                    {
+                        msg.AddTag("X-User-Agent", UserAgentTag);
+                    }
                     ResponseList.Add(msg);
                 }
             }

@@ -64,7 +64,7 @@ namespace Test.UPnP
 
         private static void AddWeMoSwitch()
         {
-            var localDevice = UPnPDevice.CreateRootDevice(600, 2, null);
+            var localDevice = UPnPDevice.CreateRootDevice( /* expiration */ 600, /* version*/ 1, /* web dir */ null);
             localDevice.StandardDeviceType = "urn:Belkin:device:controllee";
             localDevice.ModelNumber = "3.1234";
             localDevice.UniqueDeviceName = "Lightswitch-"+localDevice.UniqueDeviceName;
@@ -119,7 +119,7 @@ namespace Test.UPnP
             // Add the methods
             service.AddMethod("GetBinaryState", stateVarName);
             service.AddMethod("SetBinaryState", stateVarName);
-            
+
             // Add the service
             localDevice.AddService(service);
             // Start the WeMo switch device UPnP simulator
