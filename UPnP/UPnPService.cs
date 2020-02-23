@@ -498,7 +498,7 @@ namespace OpenSource.UPnP
             {
                 if (Min.GetType().FullName != GetNetType().FullName)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Type Checking Failed (minimum value): " + ConvertFromUPnPType(VarType).FullName +
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Type Checking Failed (minimum value): " + ConvertFromUPnPType(VarType).FullName +
                     " expected, not " + Min.GetType().FullName);
                     throw (new UPnPTypeMismatchException("Minimum value: " + ConvertFromUPnPType(VarType).FullName +
                     " expected, not " + Min.GetType().FullName));
@@ -509,7 +509,7 @@ namespace OpenSource.UPnP
             {
                 if (Max.GetType().FullName != GetNetType().FullName)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Type Checking Failed (maximum value): " + ConvertFromUPnPType(VarType).FullName +
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Type Checking Failed (maximum value): " + ConvertFromUPnPType(VarType).FullName +
                     " expected, not " + Max.GetType().FullName);
                     throw (new UPnPTypeMismatchException("Maximum value: " + ConvertFromUPnPType(VarType).FullName +
                     " expected, not " + Max.GetType().FullName));
@@ -520,7 +520,7 @@ namespace OpenSource.UPnP
             {
                 if (Step.GetType().FullName != GetNetType().FullName)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Type Checking Failed (step value): " + ConvertFromUPnPType(VarType).FullName +
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Type Checking Failed (step value): " + ConvertFromUPnPType(VarType).FullName +
                     " expected, not " + Step.GetType().FullName);
                     throw (new UPnPTypeMismatchException("Step value: " + ConvertFromUPnPType(VarType).FullName +
                     " expected, not " + Step.GetType().FullName));
@@ -543,7 +543,7 @@ namespace OpenSource.UPnP
             }
             if (NewVal.GetType().FullName != GetNetType().FullName)
             {
-                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Type Checking Failed: " + ConvertFromUPnPType(VarType).FullName +
+                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Type Checking Failed: " + ConvertFromUPnPType(VarType).FullName +
                 " expected, not " + NewVal.GetType().FullName);
                 throw (new UPnPTypeMismatchException(ConvertFromUPnPType(VarType).FullName +
                 " expected, not " + NewVal.GetType().FullName));
@@ -564,7 +564,7 @@ namespace OpenSource.UPnP
                     }
                     if (OK == false)
                     {
-                        OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Type Checking Failed: " + NewVal.ToString() + " NOT in allowed value list");
+                        OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Type Checking Failed: " + NewVal.ToString() + " NOT in allowed value list");
                         throw (new UPnPTypeMismatchException(NewVal.ToString() + " NOT in allowed value list"));
                     }
                 }
@@ -581,7 +581,7 @@ namespace OpenSource.UPnP
                     {
                         if (((IComparable)NewVal).CompareTo(MinVal) < 0)
                         {
-                            OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Type Checking Failed: " + "Specified value: " + NewVal.ToString() + " must be >= " + MinVal.ToString());
+                            OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Type Checking Failed: " + "Specified value: " + NewVal.ToString() + " must be >= " + MinVal.ToString());
                             throw (new OutOfRangeException("Specified value: " + NewVal.ToString() + " must be >= " + MinVal.ToString()));
                         }
                     }
@@ -589,7 +589,7 @@ namespace OpenSource.UPnP
                     {
                         if (((IComparable)NewVal).CompareTo(MaxVal) > 0)
                         {
-                            OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Type Checking Failed: " + "Specified value: " + NewVal.ToString() + " must be <= " + MaxVal.ToString());
+                            OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Type Checking Failed: " + "Specified value: " + NewVal.ToString() + " must be <= " + MaxVal.ToString());
                             throw (new OutOfRangeException("Specified value: " + NewVal.ToString() + " must be <= " + MaxVal.ToString()));
                         }
                     }
@@ -2203,7 +2203,7 @@ namespace OpenSource.UPnP
 
                     if (CurrentTimeout != 0)
                     {
-                        EventLogger.Log(this, System.Diagnostics.EventLogEntryType.SuccessAudit, "SUBSCRIBE [" + this.CurrentSID + "] Duration: " + CurrentTimeout.ToString() + " <" + DateTime.Now.ToLongTimeString() + ">");
+                        EventLogger.Log(this, EventLogEntryType.SuccessAudit, "SUBSCRIBE [" + this.CurrentSID + "] Duration: " + CurrentTimeout.ToString() + " <" + DateTime.Now.ToLongTimeString() + ">");
                         SubscribeCycle.Add(this.GetHashCode(), CurrentTimeout / 2);
                     }
                 }
@@ -2311,7 +2311,7 @@ namespace OpenSource.UPnP
                 if (M.StatusCode != 200)
                 {
                     // Renew Failed
-                    EventLogger.Log(this, System.Diagnostics.EventLogEntryType.SuccessAudit, "Renewal [" + this.CurrentSID + "] Error:" + M.StatusCode.ToString() + " <" + DateTime.Now.ToLongTimeString() + ">");
+                    EventLogger.Log(this, EventLogEntryType.SuccessAudit, "Renewal [" + this.CurrentSID + "] Error:" + M.StatusCode.ToString() + " <" + DateTime.Now.ToLongTimeString() + ">");
 
                     SubscribeCycle.Remove(this.GetHashCode());
                     this.SubscribeCounter = 0;
@@ -2319,14 +2319,14 @@ namespace OpenSource.UPnP
                 }
                 else
                 {
-                    EventLogger.Log(this, System.Diagnostics.EventLogEntryType.SuccessAudit, "Renewal [" + this.CurrentSID + "] OK <" + DateTime.Now.ToLongTimeString() + ">");
+                    EventLogger.Log(this, EventLogEntryType.SuccessAudit, "Renewal [" + this.CurrentSID + "] OK <" + DateTime.Now.ToLongTimeString() + ">");
                     SubscribeCycle.Add(this.GetHashCode(), CurrentTimeout / 2);
                 }
             }
             else
             {
                 // Renew Failed
-                EventLogger.Log(this, System.Diagnostics.EventLogEntryType.SuccessAudit, "Renewal [" + this.CurrentSID + "] DeviceError <" + DateTime.Now.ToLongTimeString() + ">");
+                EventLogger.Log(this, EventLogEntryType.SuccessAudit, "Renewal [" + this.CurrentSID + "] DeviceError <" + DateTime.Now.ToLongTimeString() + ">");
 
                 SubscribeCycle.Remove(this.GetHashCode());
                 this.SubscribeCounter = 0;
@@ -3282,7 +3282,7 @@ namespace OpenSource.UPnP
                         try
                         {
                             ce = ParseErrorBody(response.StringBuffer, 0);
-                            OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "UPnP Action <" + state.MethodName + "> Error [" + ce.ErrorCode.ToString() + "] " + ce.ErrorDescription);
+                            OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "UPnP Action <" + state.MethodName + "> Error [" + ce.ErrorCode.ToString() + "] " + ce.ErrorDescription);
                         }
                         catch (Exception ex)
                         {
@@ -4220,7 +4220,7 @@ namespace OpenSource.UPnP
                             {
                                 Object RetVal = UPnPService.CreateObjectInstance(var.GetNetType(), val);
                                 var.Value = RetVal;
-                                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.SuccessAudit, RetVal.ToString());
+                                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.SuccessAudit, RetVal.ToString());
                                 StateVariables[name] = var;
                             }
                             catch (Exception eve)
@@ -4317,7 +4317,7 @@ namespace OpenSource.UPnP
                                 ++sinfo.SEQ;
                                 SubscriberTable[KEYS[keyid]] = sinfo;
 
-                                //OpenSource.Utilities.EventLogger.Log(this,System.Diagnostics.EventLogEntryType.SuccessAudit,Packet.StringBuffer);
+                                //OpenSource.Utilities.EventLogger.Log(this,EventLogEntryType.SuccessAudit,Packet.StringBuffer);
 
                                 R = new HTTPRequest();
                                 SendEventTable[R] = R;

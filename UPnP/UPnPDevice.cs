@@ -23,6 +23,7 @@ using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using OpenSource.Utilities;
 
 namespace OpenSource.UPnP
 {
@@ -1187,7 +1188,7 @@ namespace OpenSource.UPnP
                 }
                 catch (UPnPCustomException ce)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "UPnP Error [" + ce.ErrorCode.ToString() + "] " + ce.ErrorDescription);
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "UPnP Error [" + ce.ErrorCode.ToString() + "] " + ce.ErrorDescription);
                     Response.StatusCode = 500;
                     Response.StatusData = "Internal";
                     Response.StringBuffer = BuildErrorBody(ce);
@@ -1201,12 +1202,12 @@ namespace OpenSource.UPnP
                     Response.StatusData = "Internal";
                     if (ie.UPNP != null)
                     {
-                        OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "UPnP Error [" + ie.UPNP.ErrorCode.ToString() + "] " + ie.UPNP.ErrorDescription);
+                        OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "UPnP Error [" + ie.UPNP.ErrorCode.ToString() + "] " + ie.UPNP.ErrorDescription);
                         Response.StringBuffer = BuildErrorBody(ie.UPNP);
                     }
                     else
                     {
-                        OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "UPnP Invocation Error [" + ie.MethodName + "] " + ie.Message);
+                        OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "UPnP Invocation Error [" + ie.MethodName + "] " + ie.Message);
                         Response.StringBuffer = BuildErrorBody(new UPnPCustomException(500, ie.Message));
                     }
                     WebSession.Send(Response);
@@ -1244,7 +1245,7 @@ namespace OpenSource.UPnP
                     if (typeof(UPnPCustomException).IsInstanceOfType(inner))
                     {
                         UPnPCustomException ce = (UPnPCustomException)inner;
-                        OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "UPnP Error [" + ce.ErrorCode.ToString() + "] " + ce.ErrorDescription);
+                        OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "UPnP Error [" + ce.ErrorCode.ToString() + "] " + ce.ErrorDescription);
                         Response.StatusCode = 500;
                         Response.StatusData = "Internal";
                         Response.StringBuffer = BuildErrorBody(ce);
