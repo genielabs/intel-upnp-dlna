@@ -991,7 +991,7 @@ namespace OpenSource.UPnP
                     Headers.BodyBuffer = SocketStream.ToArray();
                     if (OpenSource.Utilities.EventLogger.Enabled)
                     {
-                        OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, Headers.StringPacket);
+                        OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, Headers.StringPacket);
                     }
                     OnSniffPacketEvent.Fire(this, Headers);
                     OnReceiveEvent.Fire(this, Headers);
@@ -1126,7 +1126,7 @@ namespace OpenSource.UPnP
                             //Informational
                             if (OpenSource.Utilities.EventLogger.Enabled)
                             {
-                                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, "<<IGNORING>>\r\n" + Headers.StringPacket);
+                                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, "<<IGNORING>>\r\n" + Headers.StringPacket);
                             }
 //							OnHeaderEvent.Fire(this,Headers, UserStream);
                             OnSniffPacketEvent.Fire(this, Headers);
@@ -1141,7 +1141,7 @@ namespace OpenSource.UPnP
                             //No Body or No Change
                             if (OpenSource.Utilities.EventLogger.Enabled)
                             {
-                                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, Headers.StringPacket);
+                                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, Headers.StringPacket);
                             }
                             OnHeaderEvent.Fire(this, Headers, UserStream);
                             OnSniffPacketEvent.Fire(this, Headers);
@@ -1214,7 +1214,7 @@ namespace OpenSource.UPnP
                                 // Already have the packet
                                 if (OpenSource.Utilities.EventLogger.Enabled)
                                 {
-                                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, Headers.StringPacket);
+                                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, Headers.StringPacket);
                                 }
                                 OnSniffPacketEvent.Fire(this, Headers);
                                 OnReceiveEvent.Fire(this, Headers);
@@ -1270,8 +1270,8 @@ namespace OpenSource.UPnP
                 }
                 else
                 {
-//					OpenSource.Utilities.EventLogger.Log(this,System.Diagnostics.EventLogEntryType.SuccessAudit,"NONChunk Data: " + BufferSize.ToString() + " bytes");
-//					OpenSource.Utilities.EventLogger.Log(this,System.Diagnostics.EventLogEntryType.SuccessAudit,"Writing["+SocketStream.GetHashCode().ToString()+"]: " + U.GetString(buffer,0,BufferSize));
+//					OpenSource.Utilities.EventLogger.Log(this,EventLogEntryType.SuccessAudit,"NONChunk Data: " + BufferSize.ToString() + " bytes");
+//					OpenSource.Utilities.EventLogger.Log(this,EventLogEntryType.SuccessAudit,"Writing["+SocketStream.GetHashCode().ToString()+"]: " + U.GetString(buffer,0,BufferSize));
 
                     SocketStream.Write(buffer, 0, BufferSize);
                 }
@@ -1301,7 +1301,7 @@ namespace OpenSource.UPnP
                             Headers.BodyBuffer = SocketStream.ToArray();
                             if (OpenSource.Utilities.EventLogger.Enabled)
                             {
-                                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, Headers.StringPacket);
+                                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, Headers.StringPacket);
                             }
                             OnSniffPacketEvent.Fire(this, Headers);
                             OnReceiveEvent.Fire(this, Headers);
@@ -1508,7 +1508,7 @@ namespace OpenSource.UPnP
                             Headers.RemoveTag("Transfer-Encoding");
                             if (OpenSource.Utilities.EventLogger.Enabled)
                             {
-                                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, Headers.StringPacket);
+                                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, Headers.StringPacket);
                             }
                             OnSniffPacketEvent.Fire(this, Headers);
                             OnReceiveEvent.Fire(this, Headers);
@@ -1617,7 +1617,7 @@ namespace OpenSource.UPnP
             OnSniffPacketEvent.Fire(this, (HTTPMessage)Packet.Clone());
             if (OpenSource.Utilities.EventLogger.Enabled)
             {
-                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, Packet.StringPacket);
+                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, Packet.StringPacket);
             }
 
             if (Packet.Version == "1.0")

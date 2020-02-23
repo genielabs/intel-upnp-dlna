@@ -26,11 +26,21 @@ namespace OpenSource.Utilities
     /// system log file upon startup. All exceptions should be sent to the log
     /// using the Log(Exception) method.
     /// </summary>
+    /// 
+
+    public enum EventLogEntryType {
+        Error,
+        FailureAudit,
+        Information,
+        SuccessAudit,
+    }
+
+
     public sealed class EventLogger
     {
-        public delegate void EventHandler(EventLogEntryType LogType, object origin, string StackTrace, string LogMessage);
+        // public delegate void EventHandler(EventLogEntryType LogType, object origin, string StackTrace, string LogMessage);
 
-        public static event EventHandler OnEvent;
+        //public static event EventHandler OnEvent;
 
         public static bool Enabled = false;
         public static bool ShowAll = false;
@@ -39,7 +49,7 @@ namespace OpenSource.Utilities
         private static string g_sourceName = null;
         private static string g_productVersion = null;
         private static bool g_onExceptionShowMessage = false;
-        private static EventLog log = null;
+         private static dynamic log = null;
 
         /// <summary>
         /// Set the application wide event logging to a Windows event log file.
@@ -49,7 +59,7 @@ namespace OpenSource.Utilities
         /// <param name="productVersion">The application's version string</param>
         public static void SetLog(string sourceName, string logName, string productVersion)
         {
-            try
+          /*  try
             {
                 g_logName = logName;
                 g_sourceName = sourceName;
@@ -62,7 +72,7 @@ namespace OpenSource.Utilities
             catch (Exception)
             {
                 StopLog();
-            }
+            }*/
         }
 
         /// <summary>
@@ -73,7 +83,7 @@ namespace OpenSource.Utilities
         /// <param name="showMessageBox">Show a message box with the event</param>
         public static void SetOnExceptionAction(bool showMessageBox)
         {
-            g_onExceptionShowMessage = showMessageBox;
+            /*g_onExceptionShowMessage = showMessageBox;*/
         }
 
         /// <summary>
@@ -81,7 +91,7 @@ namespace OpenSource.Utilities
         /// </summary>
         public static void StopLog()
         {
-            try
+            /*try
             {
                 Enabled = false;
                 if (log != null)
@@ -93,7 +103,7 @@ namespace OpenSource.Utilities
             }
             catch (Exception)
             {
-            }
+            }*/
         }
 
         /// <summary>
@@ -102,7 +112,7 @@ namespace OpenSource.Utilities
         /// <param name="information">Information string to be logged</param>
         public static void Log(string information)
         {
-            Log(new object(), EventLogEntryType.Information, information);
+            /*Log(new object(), EventLogEntryType.Information, information);*/
         }
 
         public static void Log(object sender, EventLogEntryType LogType, string information)
@@ -111,7 +121,7 @@ namespace OpenSource.Utilities
             {
                 sender = new object();
             }
-            if (Enabled)
+            /*if (Enabled)
             {
                 if (ShowAll == true || LogType == EventLogEntryType.Error || LogType == EventLogEntryType.SuccessAudit)
                 {
@@ -152,10 +162,10 @@ namespace OpenSource.Utilities
                             }
                         }
                     }
-                    if (OnEvent != null)
-                        OnEvent(LogType, sender, trace.ToString(), information);
+                    *//*if (OnEvent != null)
+                        OnEvent(LogType, sender, trace.ToString(), information);*//*
                 }
-            }
+            }*/
         }
 
         public static void Log(Exception exception)
@@ -169,7 +179,7 @@ namespace OpenSource.Utilities
         /// <param name="exception">Exception to be logged</param>
         public static void Log(Exception exception, string additional)
         {
-            try
+          /*  try
             {
                 string name = exception.GetType().FullName;
                 string message = exception.Message;
@@ -203,7 +213,7 @@ namespace OpenSource.Utilities
                         OnEvent(EventLogEntryType.Error, exception.Source, exception.StackTrace, name);
                 }
                 //Console.WriteLine(exception.Source + " threw exception: " + exception.ToString());
-                /*
+                *//*
                 if (g_onExceptionShowMessage == true)
                 {
                     ExceptionForm ef = new ExceptionForm(exception);
@@ -212,11 +222,11 @@ namespace OpenSource.Utilities
                         System.Diagnostics.Debugger.Break();
                     }
                     ef.Dispose();
-                }*/
+                }*//*
             }
             catch (Exception)
             {
-            }
+            }*/
         }
 
     }

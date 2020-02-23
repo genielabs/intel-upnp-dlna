@@ -19,6 +19,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Collections;
+using OpenSource.Utilities;
 
 namespace OpenSource.UPnP
 {
@@ -326,7 +327,7 @@ namespace OpenSource.UPnP
 
         private void NonPipelinedResponseSink(HTTPRequest sender, HTTPMessage Response, object Tag)
         {
-            //			OpenSource.Utilities.EventLogger.Log(sender.s,System.Diagnostics.EventLogEntryType.Information,"TryingToDispose");
+            //			OpenSource.Utilities.EventLogger.Log(sender.s,EventLogEntryType.Information,"TryingToDispose");
             _Source = sender.Source;
             this.NotPipelinedTable.Remove(sender);
             sender.Dispose();
@@ -515,7 +516,7 @@ namespace OpenSource.UPnP
 
                 if (TagQueue.Count > 0)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, "Switching Pipeline Modes [" + ss.GetHashCode().ToString() + "]");
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, "Switching Pipeline Modes [" + ss.GetHashCode().ToString() + "]");
                     _PIPELINE = false;
                     if (!ReceivedFirstResponse)
                     {
@@ -525,7 +526,7 @@ namespace OpenSource.UPnP
 
                 if (!ReceivedFirstResponse)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Server[" + erraddr + "] closed socket without answering");
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Server[" + erraddr + "] closed socket without answering");
                     err = true;
                 }
 
@@ -563,7 +564,7 @@ namespace OpenSource.UPnP
                 while (TagQueue.Count > 0)
                 {
                     StateData sd = (StateData)TagQueue.Dequeue();
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Connection Attempt to [" + sd.Dest.ToString() + "] Refused/Failed");
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Connection Attempt to [" + sd.Dest.ToString() + "] Refused/Failed");
 
                     object Tag = sd.Tag;
                     if (sd.HeaderCB != null)

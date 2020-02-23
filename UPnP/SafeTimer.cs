@@ -109,7 +109,7 @@ namespace OpenSource.UPnP
             // SWC Testing
             System.Reflection.MethodBase method
 				= System.Reflection.MethodInfo.GetCurrentMethod();
-            OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, String.Format("Debug {0}" +
+            OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, String.Format("Debug {0}" +
             "{1} disposed", System.Environment.NewLine, method.DeclaringType.Name));
 
             // SWC 20130122 Set lock because event handler is still callable
@@ -136,7 +136,7 @@ namespace OpenSource.UPnP
 				= System.Reflection.MethodInfo.GetCurrentMethod();
 			OpenSource.Utilities.EventLogger.Log(
 				this,
-				System.Diagnostics.EventLogEntryType.Error,
+				EventLogEntryType.Error,
 				String.Format(
 				"{0} Finalizer called. Disposed= {2}",
 				method.DeclaringType.Name,
@@ -165,7 +165,7 @@ namespace OpenSource.UPnP
             {
                 System.Reflection.MethodBase method =
                     System.Reflection.MethodInfo.GetCurrentMethod();
-                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, String.Format("{0}.{1}() EH called on disposed object", method.DeclaringType.Name, method.Name));
+                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, String.Format("{0}.{1}() EH called on disposed object", method.DeclaringType.Name, method.Name));
                 return;
             }
 
@@ -181,7 +181,7 @@ namespace OpenSource.UPnP
                 {
                     System.Reflection.MethodBase method =
                         System.Reflection.MethodInfo.GetCurrentMethod();
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, String.Format("{0}.{1}() msg01 Object disposed while executing", method.DeclaringType.Name, method.Name));
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, String.Format("{0}.{1}() msg01 Object disposed while executing", method.DeclaringType.Name, method.Name));
                     return;
                 }
                 if (handle != null)
@@ -206,7 +206,7 @@ namespace OpenSource.UPnP
                 {
                     System.Reflection.MethodBase method =
                         System.Reflection.MethodInfo.GetCurrentMethod();
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, String.Format("{0}.{1}() msg02 Object disposed while executing", method.DeclaringType.Name, method.Name));
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, String.Format("{0}.{1}() msg02 Object disposed while executing", method.DeclaringType.Name, method.Name));
                     return;
                 }
                 if (AutoReset == true)

@@ -303,7 +303,7 @@ namespace OpenSource.UPnP
             catch (Exception ex)
             {
                 OpenSource.Utilities.EventLogger.Log(ex);
-                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Cannot AddMembership to IPAddress: " + MulticastAddress.ToString());
+                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Cannot AddMembership to IPAddress: " + MulticastAddress.ToString());
             }
             try
             {
@@ -312,7 +312,7 @@ namespace OpenSource.UPnP
             catch (Exception ex)
             {
                 OpenSource.Utilities.EventLogger.Log(ex);
-                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Cannot Set Multicast Interface to IPAddress: " + local.Address.ToString());
+                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Cannot Set Multicast Interface to IPAddress: " + local.Address.ToString());
             }
         }
 
@@ -638,7 +638,7 @@ namespace OpenSource.UPnP
                         catch (Exception ex)
                         {
                             OpenSource.Utilities.EventLogger.Log(ex);
-                            OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Send Failure [Normal for non-pipelined connection]");
+                            OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Send Failure [Normal for non-pipelined connection]");
                             Disconnect = true;
                         }
                     }
@@ -714,7 +714,7 @@ namespace OpenSource.UPnP
                         catch (Exception ex)
                         {
                             OpenSource.Utilities.EventLogger.Log(ex);
-                            OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Send Failure [Normal for non-pipelined connection]");
+                            OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Send Failure [Normal for non-pipelined connection]");
                             Disconnect = true;
                         }
                     }
@@ -798,7 +798,7 @@ namespace OpenSource.UPnP
                 return;
             }
 
-            //			OpenSource.Utilities.EventLogger.Log(this,System.Diagnostics.EventLogEntryType.Information,"BytesRead: " + BytesReceived.ToString() + " BytesRequested: "+this.BufferReadLength.ToString());
+            //			OpenSource.Utilities.EventLogger.Log(this,EventLogEntryType.Information,"BytesRead: " + BytesReceived.ToString() + " BytesRequested: "+this.BufferReadLength.ToString());
 
             if (BytesReceived <= 0)
             {
