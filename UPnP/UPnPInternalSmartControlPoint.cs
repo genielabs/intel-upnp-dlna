@@ -449,7 +449,7 @@ namespace OpenSource.UPnP
             // Hardening
             if (deviceTable.Contains(device.UniqueDeviceName) == false && deviceTable.Contains("FORCEDDEVICE") == false)
             {
-                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "UPnPDevice[" + device.FriendlyName + "]@" + device.LocationURL + " advertised UDN[" + device.UniqueDeviceName + "] in xml but not in SSDP");
+                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "UPnPDevice[" + device.FriendlyName + "]@" + device.LocationURL + " advertised UDN[" + device.UniqueDeviceName + "] in xml but not in SSDP");
                 return;
             }
 
@@ -467,7 +467,7 @@ namespace OpenSource.UPnP
                 // Hardening - Creating a device we have should never happen.
                 if (((DeviceInfo)deviceTable[device.UniqueDeviceName]).Device != null)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Unexpected UPnP Device Creation: " + device.FriendlyName + "@" + device.LocationURL);
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Unexpected UPnP Device Creation: " + device.FriendlyName + "@" + device.LocationURL);
                     return;
                 }
 

@@ -14,15 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+using OpenSource.Utilities;
 using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Threading;
-using System.Net.Sockets;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 namespace OpenSource.UPnP
 {
@@ -147,7 +145,7 @@ namespace OpenSource.UPnP
         private void HandleNotify(IPEndPoint source, IPEndPoint local, Uri LocationURL, bool IsAlive, String USN, String ST, int MaxAge, HTTPMessage Packet)
         {
             if (IsAlive && LocationURL != null)
-                OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.SuccessAudit, LocationURL.ToString());
+                OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.SuccessAudit, LocationURL.ToString());
             if (OnNotify != null)
                 OnNotify(source, local, LocationURL, IsAlive, USN, ST, MaxAge, Packet);
         }
@@ -255,7 +253,7 @@ namespace OpenSource.UPnP
                 }
                 catch (Exception ex)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "CP Failure: " + localaddr.ToString());
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "CP Failure: " + localaddr.ToString());
                     OpenSource.Utilities.EventLogger.Log(ex);
                 }
             }
@@ -330,7 +328,7 @@ namespace OpenSource.UPnP
             String ST = msg.GetTag("ST");
             if (USN.IndexOf("::") != -1)
                 USN = USN.Substring(0, USN.IndexOf("::"));
-            OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.SuccessAudit, msg.RemoteEndPoint.ToString());
+            OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.SuccessAudit, msg.RemoteEndPoint.ToString());
             if (OnSearch != null)
                 OnSearch(msg.RemoteEndPoint, msg.LocalEndPoint, new Uri(Location), USN, ST, MaxAge);
         }

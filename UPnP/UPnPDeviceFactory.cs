@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading;
 using System.Net.Sockets;
 using System.Collections;
+using OpenSource.Utilities;
 
 namespace OpenSource.UPnP
 {
@@ -91,7 +92,7 @@ namespace OpenSource.UPnP
         /// <param name="MaxSeconds">Device refresh Cycle</param>
         public void CreateDevice(Uri DescLocation, int MaxSeconds, IPAddress localaddr, string usn)
         {
-            OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Information, "Creating Device: " + usn);
+            OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Information, "Creating Device: " + usn);
 
             lock (CreateTable)
             {
@@ -158,7 +159,7 @@ namespace OpenSource.UPnP
             {
                 if (url == null)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "HTTP: Url is empty");
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "HTTP: Url is empty");
                     if (TempDevice != null)
                         TempDevice = null;
                     return;
@@ -169,7 +170,7 @@ namespace OpenSource.UPnP
                     int checkpoint = 0;
                     try
                     {
-                        OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "HTTP: Could not connect to target: " + url);
+                        OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "HTTP: Could not connect to target: " + url);
                         checkpoint = 1;
                         if (OnFailed2 != null)
                             OnFailed2(this, new Uri(url), new Exception("Could not connect to target"), expected_usn);
@@ -193,7 +194,7 @@ namespace OpenSource.UPnP
 
                 if (data == null)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "HTTP: Data is empty");
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "HTTP: Data is empty");
                     if (OnFailed2 != null)
                         OnFailed2(this, new Uri(url), new Exception("Data is empty"), expected_usn);
                     if (TempDevice != null)
@@ -249,7 +250,7 @@ namespace OpenSource.UPnP
                 }
                 if (TempDevice == null)
                 {
-                    //OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, "Invalid UPnP Device Description: URL=" + url);
+                    //OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, "Invalid UPnP Device Description: URL=" + url);
                     if (OnFailed2 != null)
                         OnFailed2(this, new Uri(url), new Exception("Invalid UPnP Device Description XML @" + url), expected_usn);
                     if (TempDevice != null)
@@ -258,7 +259,7 @@ namespace OpenSource.UPnP
                 }
                 if (expected_usn != null && TempDevice.UniqueDeviceName != expected_usn)
                 {
-                    OpenSource.Utilities.EventLogger.Log(this, System.Diagnostics.EventLogEntryType.Error, string.Format("Unique ID mismatch between SSDP packet and device description: {0} / {1} ", TempDevice.UniqueDeviceName, expected_usn));
+                    OpenSource.Utilities.EventLogger.Log(this, EventLogEntryType.Error, string.Format("Unique ID mismatch between SSDP packet and device description: {0} / {1} ", TempDevice.UniqueDeviceName, expected_usn));
                     if (OnFailed2 != null)
                         OnFailed2(this, new Uri(url), new Exception(string.Format("Unique ID mismatch between SSDP packet and device description: {0} / {1} ", TempDevice.UniqueDeviceName, expected_usn)), expected_usn);
                     if (TempDevice != null)
