@@ -97,7 +97,11 @@ namespace OpenSource.UPnP
             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
             foreach (NetworkInterface i in interfaces)
             {
+#if NETSTANDARD
+                if (/*i.IsReceiveOnly == false &&*/ i.OperationalStatus == OperationalStatus.Up && i.SupportsMulticast == true)
+#else
                 if (i.IsReceiveOnly == false && i.OperationalStatus == OperationalStatus.Up && i.SupportsMulticast == true)
+#endif
                 {
                     IPInterfaceProperties i2 = i.GetIPProperties();
                     foreach (UnicastIPAddressInformation i3 in i2.UnicastAddresses)
@@ -108,6 +112,7 @@ namespace OpenSource.UPnP
                         }
                     }
                 }
+
             }
 
             /*

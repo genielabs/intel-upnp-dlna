@@ -4,11 +4,9 @@ using System.Collections;
 using OpenSource.UPnP;
 using OpenSource.Utilities;
 
-using System.Diagnostics;
-using System.Dynamic;
 using System.Net;
 using System.Runtime.InteropServices;
-using System.Threading;
+using EventLogEntryType = OpenSource.Utilities.EventLogEntryType;
 
 namespace Test.UPnP
 {
@@ -86,8 +84,8 @@ namespace Test.UPnP
             localDevice.UserAgentTag = "redsonic";
 
             // Create an instance of the BasicEvent service
-            dynamic instance = new ExpandoObject();
-            
+            dynamic instance = new {};
+
             // Declare the "BasicEvent1" service
             var service = new UPnPService(
                 // Version
@@ -95,7 +93,7 @@ namespace Test.UPnP
                 // Service ID
                 "urn:Belkin:serviceId:basicevent1",
                 // Service Type
-                "urn:Belkin:service:basicevent:1", 
+                "urn:Belkin:service:basicevent:1",
                 // Standard Service?
                 true,
                 // Service Object Instance
@@ -104,14 +102,14 @@ namespace Test.UPnP
             service.ControlURL = "/upnp/control/basicevent1";
             service.EventURL = "/upnp/event/basicevent1";
             service.SCPDURL = "/eventservice.xml";
-            
+
             string stateVarName = "BinaryState";
             var stateVariable = new UPnPStateVariable(stateVarName, typeof(bool), true);
             stateVariable.AddAssociation("GetBinaryState", stateVarName);
             stateVariable.AddAssociation("SetBinaryState", stateVarName);
             stateVariable.Value = false;
             service.AddStateVariable(stateVariable);
-            
+
             instance.GetBinaryState = new Func<bool>(() => (bool)service.GetStateVariable(stateVarName));
             instance.SetBinaryState = new Action<int>((BinaryState) => {
                 Console.WriteLine("SetBinaryState({0})", BinaryState);

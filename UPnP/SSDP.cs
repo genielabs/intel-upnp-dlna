@@ -15,18 +15,11 @@ limitations under the License.
 */
 
 using System;
-using System.IO;
-using System.Xml;
 using System.Net;
-using System.Text;
-using System.Threading;
 using System.Net.Sockets;
 using System.Collections;
 using System.Globalization;
-using System.Security.Cryptography;
-using OpenSource.Utilities;
 using Intel.UPNP;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace OpenSource.UPnP
@@ -208,6 +201,13 @@ namespace OpenSource.UPnP
                                     OpenSource.Utilities.EventLogger.Log(ex);
 //                                    session.Client.Close();
                                 }
+#if NETSTANDARD
+                                catch (NotSupportedException ex)
+                                {
+                                    OpenSource.Utilities.EventLogger.Log(ex);
+//                                    session.Client.Close();
+                                }
+#endif
                                 session.BeginReceive(new AsyncCallback(OnReceiveSink), new object[2] { session, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
                                 sessions[addr] = session;
 
@@ -222,6 +222,13 @@ namespace OpenSource.UPnP
                                     OpenSource.Utilities.EventLogger.Log(ex);
 //                                    usession.Client.Close();
                                 }
+#if NETSTANDARD
+                                catch (NotSupportedException ex)
+                                {
+                                    OpenSource.Utilities.EventLogger.Log(ex);
+//                                    session.Client.Close();
+                                }
+#endif
                                 usession.BeginReceive(new AsyncCallback(OnReceiveSink), new object[2] { usession, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
                                 usessions[addr] = usession;
                             }
@@ -262,6 +269,13 @@ namespace OpenSource.UPnP
                                     OpenSource.Utilities.EventLogger.Log(ex);
 //                                    session.Close();
                                 }
+#if NETSTANDARD
+                                catch (NotSupportedException ex)
+                                {
+                                    OpenSource.Utilities.EventLogger.Log(ex);
+//                                    session.Client.Close();
+                                }
+#endif
                                 session.BeginReceive(new AsyncCallback(OnReceiveSink), new object[2] { session, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
                                 sessions[addr] = session;
 
@@ -276,6 +290,13 @@ namespace OpenSource.UPnP
                                     OpenSource.Utilities.EventLogger.Log(ex);
 //                                    usession.Close();
                                 }
+#if NETSTANDARD
+                                catch (NotSupportedException ex)
+                                {
+                                    OpenSource.Utilities.EventLogger.Log(ex);
+//                                    session.Client.Close();
+                                }
+#endif
                                 usession.BeginReceive(new AsyncCallback(OnReceiveSink), new object[2] { usession, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
                                 usessions[addr] = usession;
                             }
