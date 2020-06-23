@@ -11,7 +11,7 @@ test:
     only:
       - UPnP/bin/Debug/netstandard2.0/UPnP.dll
 after_test:
-  - ps: .\UPnP\nuget_pack.ps1
+  - ps: .\nuget_pack.ps1
 artifacts:
   - path: '*.nupkg'
     name: UPnP nupkg
