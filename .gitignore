@@ -6,7 +6,9 @@
 [Bb]in/
 [Oo]bj/
 .idea/
+.vs/
 
+*.nupkg
 *.userprefs
 *.suo
 *.pidb

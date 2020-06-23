@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>IntelUpnpLib</id>
+        <version>1.0.0</version>
+        <title>IntelUpnpLib</title>
+        <authors>Generoso Martello</authors>
+        <owners>G-Labs</owners>
+        <licenseUrl>https://github.com/genielabs/intel-upnp-dlna/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/genielabs/intel-upnp-dlna/</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>UPnP /DLNA library for .Net / Mono</description>
+        <summary>UPnP /DLNA libray for .Net / Mono</summary>
+        <releaseNotes></releaseNotes>
+        <copyright>G-Labs</copyright>
+        <tags>upnp dlna ssdp</tags>
+        <dependencies>
+            <group targetFramework="netstandard2.1">
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="UPnP\bin\Debug\netstandard2.1\**" target="lib\netstandard2.1" />
+    </files>
+</package>
