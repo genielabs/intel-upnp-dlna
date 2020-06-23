@@ -9,6 +9,10 @@
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <TargetFrameworks>net40;net461;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net40;net461;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="nuget_pack.ps1" />
+    <None Remove="UPnP.nuspec" />
+  </ItemGroup>
 </Project>
