@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>IntelUpnpLib</id>
+        <id>UPnP</id>
         <version>1.0.0</version>
-        <title>IntelUpnpLib</title>
+        <title>Intel UPnP Library</title>
         <authors>Generoso Martello</authors>
         <owners>G-Labs</owners>
         <licenseUrl>https://github.com/genielabs/intel-upnp-dlna/blob/master/LICENSE</licenseUrl>
