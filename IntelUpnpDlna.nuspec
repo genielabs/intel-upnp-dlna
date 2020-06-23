@@ -15,11 +15,11 @@
         <copyright>G-Labs</copyright>
         <tags>upnp dlna ssdp</tags>
         <dependencies>
-            <group targetFramework="netstandard2.1">
+            <group targetFramework="netstandard2.0">
             </group>
         </dependencies>
     </metadata>
     <files>
-        <file src="UPnP\bin\Debug\netstandard2.1\**" target="lib\netstandard2.1" />
+        <file src="UPnP\bin\Debug\netstandard2.0\**" target="lib\netstandard2.0" />
     </files>
 </package>
