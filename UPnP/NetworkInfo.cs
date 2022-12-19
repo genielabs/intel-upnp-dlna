@@ -97,7 +97,7 @@ namespace OpenSource.UPnP
             NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
             foreach (NetworkInterface i in interfaces)
             {
-#if NETSTANDARD
+#if NET6_0_OR_GREATER
                 if (/*i.IsReceiveOnly == false &&*/ i.OperationalStatus == OperationalStatus.Up && i.SupportsMulticast == true)
 #else
                 if (i.IsReceiveOnly == false && i.OperationalStatus == OperationalStatus.Up && i.SupportsMulticast == true)

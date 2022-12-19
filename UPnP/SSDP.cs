@@ -201,7 +201,7 @@ namespace OpenSource.UPnP
                                     OpenSource.Utilities.EventLogger.Log(ex);
 //                                    session.Client.Close();
                                 }
-#if NETSTANDARD
+#if NET6_0_OR_GREATER
                                 catch (NotSupportedException ex)
                                 {
                                     OpenSource.Utilities.EventLogger.Log(ex);
@@ -222,7 +222,7 @@ namespace OpenSource.UPnP
                                     OpenSource.Utilities.EventLogger.Log(ex);
 //                                    usession.Client.Close();
                                 }
-#if NETSTANDARD
+#if NET6_0_OR_GREATER
                                 catch (NotSupportedException ex)
                                 {
                                     OpenSource.Utilities.EventLogger.Log(ex);
@@ -269,7 +269,7 @@ namespace OpenSource.UPnP
                                     OpenSource.Utilities.EventLogger.Log(ex);
 //                                    session.Close();
                                 }
-#if NETSTANDARD
+#if NET6_0_OR_GREATER
                                 catch (NotSupportedException ex)
                                 {
                                     OpenSource.Utilities.EventLogger.Log(ex);
@@ -290,7 +290,7 @@ namespace OpenSource.UPnP
                                     OpenSource.Utilities.EventLogger.Log(ex);
 //                                    usession.Close();
                                 }
-#if NETSTANDARD
+#if NET6_0_OR_GREATER
                                 catch (NotSupportedException ex)
                                 {
                                     OpenSource.Utilities.EventLogger.Log(ex);
