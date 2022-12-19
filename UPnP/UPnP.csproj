@@ -1,18 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <FileVersion>1.0.0</FileVersion>
-    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <TargetFrameworks>net40;net461;netstandard2.0</TargetFrameworks>
+    <PackageId>UPnP</PackageId>
+    <Title>Intel UPnP Library</Title>
+    <Version>1.1.0</Version>
+    <Authors>Intel, Generoso Martello</Authors>
+    <Company>Intel, G-Labs</Company>
+    <Description>UPnP /DLNA library for .NET based on Intel UPnP framework.</Description>
+    <PackageLicense>./LICENSE</PackageLicense>
+    <PackageProjectUrl>https://github.com/genielabs/intel-upnp-dlna/</PackageProjectUrl>
+    <PackageTags>upnp dlna ssdp</PackageTags>
+    <RuntimeIdentifiers>win8-arm;linux-arm;win10-x64;osx.10.11-x64;linux-x64</RuntimeIdentifiers>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="nuget_pack.ps1" />
-    <None Remove="UPnP.nuspec" />
-  </ItemGroup>
 </Project>
