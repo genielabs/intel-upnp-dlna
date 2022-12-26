@@ -279,8 +279,15 @@ namespace OpenSource.UPnP
             }
             if (client.Client != null)
             {
-                IPEndPoint local = (IPEndPoint)client.Client.LocalEndPoint;
-                SSDPSessions.Remove(local.Address);
+                try
+                {
+                    IPEndPoint local = (IPEndPoint)client.Client.LocalEndPoint;
+                    SSDPSessions.Remove(local.Address);
+                }
+                catch (Exception ex)
+                {
+                    OpenSource.Utilities.EventLogger.Log(ex);
+                }
             }
             client.Close();
         }
