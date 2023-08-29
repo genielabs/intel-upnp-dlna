@@ -102,7 +102,7 @@ namespace OpenSource.UPnP
             int MinVal = (int)((double)SSDP_EXPIRATION * 0.25 * 1000);
             int MaxVal = (int)((double)SSDP_EXPIRATION * 0.45 * 1000);
 
-            NotifyTimer.SetTimer(5000, __NotifyCheck);
+            __NotifyCheck(NotifyTimer);
             /*
             NotifyTimer.Interval = RND.Next(MinVal, MaxVal);
             NotifyTimer.AutoReset = true;
@@ -194,7 +194,8 @@ namespace OpenSource.UPnP
                                 session.JoinMulticastGroup(Utils.UpnpMulticastV4Addr, addr);
                                 try
                                 {
-                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+//                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+session.Client.Disconnect(true);
                                 }
                                 catch (SocketException ex)
                                 {
@@ -215,7 +216,8 @@ namespace OpenSource.UPnP
                                 usession.Client.Bind(new IPEndPoint(addr, 0));
                                 try
                                 {
-                                    usession.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+//                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+session.Client.Disconnect(true);
                                 }
                                 catch (SocketException ex)
                                 {
@@ -262,7 +264,8 @@ namespace OpenSource.UPnP
                                     session.JoinMulticastGroup((int)addr.ScopeId, Utils.UpnpMulticastV6Addr1);
                                 try
                                 {
-                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+//                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+session.Client.Disconnect(true);
                                 }
                                 catch (SocketException ex)
                                 {
@@ -283,7 +286,8 @@ namespace OpenSource.UPnP
                                 usession.Client.Bind(new IPEndPoint(addr, 0));
                                 try
                                 {
-                                    usession.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+//                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+session.Client.Disconnect(true);
                                 }
                                 catch (SocketException ex)
                                 {
@@ -352,6 +356,8 @@ namespace OpenSource.UPnP
                 OnRefresh();
             int MinVal = (int)((double)SSDP_EXPIRATION * 0.25 * 1000);
             int MaxVal = (int)((double)SSDP_EXPIRATION * 0.45 * 1000);
+            sender.SetTimer(5000, __NotifyCheck);
+            //sender.SetTimer(RND.Next(MinVal, MaxVal), __NotifyCheck);
             //NotifyTimer.Interval = RND.Next(MinVal, MaxVal);
         }
 

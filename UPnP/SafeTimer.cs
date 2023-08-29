@@ -16,7 +16,6 @@ limitations under the License.
 
 using System;
 using System.Threading;
-using System.Collections;
 using OpenSource.Utilities;
 
 namespace OpenSource.UPnP
@@ -128,7 +127,7 @@ namespace OpenSource.UPnP
                 }
             }
         }
-        #if FINALIZER_CHECK
+#if FINALIZER_CHECK
 		~SafeTimer()
 		{
 			// SWC Testing

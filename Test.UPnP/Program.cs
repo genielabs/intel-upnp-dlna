@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-
+using System.Dynamic;
 using OpenSource.UPnP;
 using OpenSource.Utilities;
 
@@ -84,7 +84,7 @@ namespace Test.UPnP
             localDevice.UserAgentTag = "redsonic";
 
             // Create an instance of the BasicEvent service
-            dynamic instance = new {};
+            dynamic instance = new ExpandoObject();
 
             // Declare the "BasicEvent1" service
             var service = new UPnPService(
