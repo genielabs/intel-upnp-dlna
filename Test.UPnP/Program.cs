@@ -23,22 +23,28 @@ namespace Test.UPnP
 
             while (true)
             {
-                //Thread.Sleep(1000);
+                //Thread.Sleep(5000);
                 //Console.WriteLine(".");
+
                 var s = Console.ReadLine();
                 if (s == "-" && controlPoint != null)
                 {
                     StopControlPoint(controlPoint);
                 }
-                if (s == "+")
+                else if (s == "+" && controlPoint == null)
                 {
                     StartControlPoint(controlPoint);
                 }
-                if (s == "s")
+                else if (s == "r" && controlPoint != null)
+                {
+                    controlPoint.Rescan();
+                }
+                else if (s == "s")
                 {
                     // Simulate WeMo Switch
                     AddWeMoSwitch();
                 }
+
             }
         }
 
@@ -369,16 +375,21 @@ namespace Test.UPnP
 
         public void Rescan()
         {
+            Hashtable dt = this.deviceTable.Clone() as Hashtable; 
             lock (this.deviceTableLock)
             {
-                IDictionaryEnumerator enumerator = this.deviceTable.GetEnumerator();
+                IDictionaryEnumerator enumerator = dt.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
                     string key = (string) enumerator.Key;
                     this.deviceLifeTimeClock.Add(key, 20);
                 }
             }
-            this.genericControlPoint.FindDeviceAsync(searchFilter);
+
+            if (this.genericControlPoint != null)
+            {
+                this.genericControlPoint.FindDeviceAsync(searchFilter);
+            }
         }
 
         internal void SSDPNotifySink(IPEndPoint source, IPEndPoint local, Uri LocationURL, bool IsAlive, string USN,

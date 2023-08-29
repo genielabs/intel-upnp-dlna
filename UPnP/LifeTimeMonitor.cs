@@ -15,7 +15,6 @@ limitations under the License.
 */
 
 using System;
-using System.Threading;
 using System.Collections;
 using OpenSource.Utilities;
 using Intel.UPNP;
@@ -86,17 +85,26 @@ namespace OpenSource.UPnP
             {
                 if (MonitorList.Count > 0)
                 {
+                    TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
+                    if (nextEventTime.TotalMilliseconds <= 0)
+                    {
+                        sender.SetTimer(1, OnTimedEvent);
+                    }
+                    else
+                    {
+                        sender.SetTimer((int)nextEventTime.TotalMilliseconds, OnTimedEvent);
+                    }
                     /*
-					TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
-					if (nextEventTime.TotalMilliseconds<=0)
-					{
-						SafeNotifyTimer.Interval = 1;
-					}
-					else
-					{
-						SafeNotifyTimer.Interval = (int)nextEventTime.TotalMilliseconds;
-					}
-					SafeNotifyTimer.Start();
+                    TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
+                    if (nextEventTime.TotalMilliseconds<=0)
+                    {
+                        SafeNotifyTimer.Interval = 1;
+                    }
+                    else
+                    {
+                        SafeNotifyTimer.Interval = (int)nextEventTime.TotalMilliseconds;
+                    }
+                    SafeNotifyTimer.Start();
                     */
                 }
             }
@@ -132,17 +140,26 @@ namespace OpenSource.UPnP
 
                     if (MonitorList.Count > 0)
                     {
+                        TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
+                        if (nextEventTime.TotalMilliseconds <= 0)
+                        {
+                            SafeNotifyTimer.SetTimer(1, OnTimedEvent);
+                        }
+                        else
+                        {
+                            SafeNotifyTimer.SetTimer((int)nextEventTime.TotalMilliseconds, OnTimedEvent);
+                        }
                         /*
-						TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
-						if (nextEventTime.TotalMilliseconds<=0)
-						{
-							SafeNotifyTimer.Interval = 1;
-						}
-						else
-						{
-							SafeNotifyTimer.Interval = (int)nextEventTime.TotalMilliseconds;
-						}
-						SafeNotifyTimer.Start();
+                        TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
+                        if (nextEventTime.TotalMilliseconds<=0)
+                        {
+                            SafeNotifyTimer.Interval = 1;
+                        }
+                        else
+                        {
+                            SafeNotifyTimer.Interval = (int)nextEventTime.TotalMilliseconds;
+                        }
+                        SafeNotifyTimer.Start();
                         */
                     }
                 }
