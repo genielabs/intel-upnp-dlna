@@ -62,9 +62,6 @@ namespace OpenSource.UPnP
         /// </summary>
         public LifeTimeMonitor()
         {
-            SafeNotifyTimer.SetTimer(5000, OnTimedEvent);
-            //SafeNotifyTimer.OnElapsed += new SafeTimer.TimeElapsedHandler(OnTimedEvent);
-            //SafeNotifyTimer.AutoReset = false;
             //OpenSource.Utilities.InstanceTracker.Add(this);
         }
 
@@ -81,40 +78,13 @@ namespace OpenSource.UPnP
             }
             foreach (object obj in eventList)
                 OnExpiredEvent.Fire(this, obj);
-            lock (MonitorLock)
-            {
-                if (MonitorList.Count > 0)
-                {
-                    TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
-                    if (nextEventTime.TotalMilliseconds <= 0)
-                    {
-                        sender.SetTimer(1, OnTimedEvent);
-                    }
-                    else
-                    {
-                        sender.SetTimer((int)nextEventTime.TotalMilliseconds, OnTimedEvent);
-                    }
-                    /*
-                    TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
-                    if (nextEventTime.TotalMilliseconds<=0)
-                    {
-                        SafeNotifyTimer.Interval = 1;
-                    }
-                    else
-                    {
-                        SafeNotifyTimer.Interval = (int)nextEventTime.TotalMilliseconds;
-                    }
-                    SafeNotifyTimer.Start();
-                    */
-                }
-            }
+
         }
 
         public void Clear()
         {
             lock (MonitorLock)
             {
-                //this.SafeNotifyTimer.Stop();
                 MonitorList.Clear();
             }
         }
@@ -133,39 +103,10 @@ namespace OpenSource.UPnP
             {
                 if (MonitorList.ContainsValue(obj) == true)
                 {
-                    //SafeNotifyTimer.Stop();
-                    //NotifyTimer.Stop();
                     RetVal = true;
                     MonitorList.RemoveAt(MonitorList.IndexOfValue(obj));
-
-                    if (MonitorList.Count > 0)
-                    {
-                        TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
-                        if (nextEventTime.TotalMilliseconds <= 0)
-                        {
-                            SafeNotifyTimer.SetTimer(1, OnTimedEvent);
-                        }
-                        else
-                        {
-                            SafeNotifyTimer.SetTimer((int)nextEventTime.TotalMilliseconds, OnTimedEvent);
-                        }
-                        /*
-                        TimeSpan nextEventTime = ((DateTime)MonitorList.GetKey(0)).Subtract(DateTime.Now);
-                        if (nextEventTime.TotalMilliseconds<=0)
-                        {
-                            SafeNotifyTimer.Interval = 1;
-                        }
-                        else
-                        {
-                            SafeNotifyTimer.Interval = (int)nextEventTime.TotalMilliseconds;
-                        }
-                        SafeNotifyTimer.Start();
-                        */
-                    }
                 }
             }
-            //OnTimedEvent(this,null);
-//			OnTimedEvent();
             return RetVal;
         }
 

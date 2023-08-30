@@ -398,7 +398,7 @@ namespace OpenSource.UPnP
                 if (DeviceCount == 0)
                 {
                     CPWebServerTable = new Hashtable();
-                    CPNetworkInfo = new NetworkInfo(new NetworkInfo.InterfaceHandler(NewCPInterface));
+                    CPNetworkInfo = new NetworkInfo(NewCPInterface);
                 }
                 else
                 {
@@ -406,10 +406,10 @@ namespace OpenSource.UPnP
                     for (int i = 0; i < alist.Length; ++i)
                     {
                         CP_RegisteredInterfaces[alist[i].ToString()] = true;
-                        ((MiniWebServer)CPWebServerTable[alist[i].ToString()]).OnReceive += new MiniWebServer.HTTPReceiveHandler(HandleWebRequest);
-                        ((MiniWebServer)CPWebServerTable[alist[i].ToString()]).OnHeader += new MiniWebServer.HTTPReceiveHandler(HandleHeaderRequest);
+                        ((MiniWebServer)CPWebServerTable[alist[i].ToString()]).OnReceive += HandleWebRequest;
+                        ((MiniWebServer)CPWebServerTable[alist[i].ToString()]).OnHeader += HandleHeaderRequest;
                     }
-                    CPNetworkInfo.OnNewInterface += new NetworkInfo.InterfaceHandler(NewCPInterface);
+                    CPNetworkInfo.OnNewInterface += NewCPInterface;
                 }
                 ++DeviceCount;
             }
@@ -661,11 +661,11 @@ namespace OpenSource.UPnP
             if (ControlPointOnly == false)
             {
                 device.AddSubVirtualDirectory(device.UniqueDeviceName);
-                this.AddVirtualDirectory(device.UniqueDeviceName, new UPnPDevice.VirtualDirectoryHandler(device.HandleParent_Header), new UPnPDevice.VirtualDirectoryHandler(device.HandleParent));
+                this.AddVirtualDirectory(device.UniqueDeviceName, device.HandleParent_Header, device.HandleParent);
             }
             else
             {
-                this.AddVirtualDirectory(device.UniqueDeviceName, null, new UPnPDevice.VirtualDirectoryHandler(device.EventProcesser));
+                this.AddVirtualDirectory(device.UniqueDeviceName, null, device.EventProcesser);
                 ProcessDevice_EVENTCALLBACK(this);
             }
         }
@@ -711,8 +711,8 @@ namespace OpenSource.UPnP
                 if (CPWebServerTable.ContainsKey(ip.ToString()) == false)
                 {
                     MiniWebServer ws = new MiniWebServer(new IPEndPoint(ip, 0));
-                    ws.OnReceive += new MiniWebServer.HTTPReceiveHandler(HandleWebRequest);
-                    ws.OnHeader += new MiniWebServer.HTTPReceiveHandler(HandleHeaderRequest);
+                    ws.OnReceive += HandleWebRequest;
+                    ws.OnHeader += HandleHeaderRequest;
                     CPWebServerTable[ip.ToString()] = ws;
                 }
                 else
@@ -720,8 +720,8 @@ namespace OpenSource.UPnP
                     if (CP_RegisteredInterfaces.ContainsKey(ip.ToString()) == false)
                     {
                         CP_RegisteredInterfaces[ip.ToString()] = true;
-                        ((MiniWebServer)CPWebServerTable[ip.ToString()]).OnReceive += new MiniWebServer.HTTPReceiveHandler(HandleWebRequest);
-                        ((MiniWebServer)CPWebServerTable[ip.ToString()]).OnHeader += new MiniWebServer.HTTPReceiveHandler(HandleHeaderRequest);
+                        ((MiniWebServer)CPWebServerTable[ip.ToString()]).OnReceive += HandleWebRequest;
+                        ((MiniWebServer)CPWebServerTable[ip.ToString()]).OnHeader += HandleHeaderRequest;
                     }
                 }
 
@@ -769,7 +769,7 @@ namespace OpenSource.UPnP
         {
             lock (UpdateTable)
             {
-                UPnPDeviceFactory df = new UPnPDeviceFactory(LocationUri, 250, new UPnPDeviceFactory.UPnPDeviceHandler(UpdateDeviceSink), null, null, null);
+                UPnPDeviceFactory df = new UPnPDeviceFactory(LocationUri, 250, UpdateDeviceSink, null, null, null);
                 UpdateTable[df] = df;
             }
         }
@@ -796,11 +796,11 @@ namespace OpenSource.UPnP
         {
             //String tmp = ip.ToString();
             MiniWebServer WebServer = new MiniWebServer(new IPEndPoint(ip, Port));
-            if ((this.OnSniff != null) || (this.OnSniffPacket != null))
-                WebServer.OnSession += new MiniWebServer.NewSessionHandler(SniffSessionSink);
+            if ((OnSniff != null) || (OnSniffPacket != null))
+                WebServer.OnSession += SniffSessionSink;
 
-            WebServer.OnReceive += new MiniWebServer.HTTPReceiveHandler(HandleWebRequest);
-            WebServer.OnHeader += new MiniWebServer.HTTPReceiveHandler(HandleHeaderRequest);
+            WebServer.OnReceive += HandleWebRequest;
+            WebServer.OnHeader += HandleHeaderRequest;
             WebServerTable[ip.ToString()] = WebServer;
             SendNotify(ip);
         }
@@ -814,10 +814,10 @@ namespace OpenSource.UPnP
                 MiniWebServer WebServer;
                 WebServer = new MiniWebServer(new IPEndPoint(ip, UseThisPort));
                 if ((this.OnSniff != null) || (this.OnSniffPacket != null))
-                    WebServer.OnSession += new MiniWebServer.NewSessionHandler(SniffSessionSink);
+                    WebServer.OnSession += SniffSessionSink;
 
-                WebServer.OnReceive += new MiniWebServer.HTTPReceiveHandler(HandleWebRequest);
-                WebServer.OnHeader += new MiniWebServer.HTTPReceiveHandler(HandleHeaderRequest);
+                WebServer.OnReceive += HandleWebRequest;
+                WebServer.OnHeader += HandleHeaderRequest;
                 WebServerTable[ip.ToString()] = WebServer;
                 SendNotify(ip);
             }
@@ -900,8 +900,8 @@ namespace OpenSource.UPnP
             {
                 if (IsRoot == true)
                 {
-                    NetInfo = new NetworkInfo(new NetworkInfo.InterfaceHandler(NewDeviceInterface));
-                    NetInfo.OnInterfaceDisabled += new NetworkInfo.InterfaceHandler(DisabledInterface);
+                    NetInfo = new NetworkInfo(NewDeviceInterface);
+                    NetInfo.OnInterfaceDisabled += DisabledInterface;
                     Advertise();
                 }
                 else
@@ -958,19 +958,19 @@ namespace OpenSource.UPnP
         {
             if (OnSniff != null)
             {
-                s.OnSniff += new HTTPSession.SniffHandler(SniffSessionSink2);
+                s.OnSniff += SniffSessionSink2;
             }
             else
             {
                 if (OnSniffPacket == null)
                 {
-                    Sender.OnSession -= new MiniWebServer.NewSessionHandler(SniffSessionSink);
+                    Sender.OnSession -= SniffSessionSink;
                 }
             }
 
             if (OnSniffPacket != null)
             {
-                s.OnSniffPacket += new HTTPSession.ReceiveHandler(SniffSessionSink3);
+                s.OnSniffPacket += SniffSessionSink3;
             }
 
         }
@@ -1342,7 +1342,7 @@ namespace OpenSource.UPnP
 
                         IPEndPoint d = new IPEndPoint(IPAddress.Parse(cbURL[x].Host), cbURL[x].Port);
                         HTTPRequest R = new HTTPRequest();
-                        R.OnResponse += new HTTPRequest.RequestHandler(HandleInitialEvent);
+                        R.OnResponse += HandleInitialEvent;
                         this.InitialEventTable[R] = R;
                         R.PipelineRequest(d, Response2, null);
                     }

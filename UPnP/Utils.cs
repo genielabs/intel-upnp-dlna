@@ -58,16 +58,5 @@ namespace OpenSource.UPnP
             return "";
         }
 
-        private static bool MonoDetected = false;
-        private static bool MonoActive = false;
-
-        public static bool IsMono()
-        {
-            if (MonoDetected)
-                return MonoActive;
-            MonoActive = (Type.GetType("Mono.Runtime") != null);
-            MonoDetected = true;
-            return MonoActive;
-        }
     }
 }

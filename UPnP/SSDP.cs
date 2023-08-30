@@ -83,8 +83,6 @@ namespace OpenSource.UPnP
         private Hashtable sessions = new Hashtable();
         private Hashtable usessions = new Hashtable();
 
-        private SafeTimer_SINGLE NotifyTimer = new SafeTimer_SINGLE();
-
         /// <summary>
         /// Constructs a new SSDP Server
         /// </summary>
@@ -93,22 +91,13 @@ namespace OpenSource.UPnP
         public SSDP(int Expiration)
         {
             //OpenSource.Utilities.InstanceTracker.Add(this);
-            LifeTimeHandler = new LifeTimeMonitor.LifeTimeHandler(SearchTimerSink);
+            LifeTimeHandler = SearchTimerSink;
             SearchTimer.OnExpired += LifeTimeHandler;
 
             SSDP_EXPIRATION = Expiration;
             if (SSDP_EXPIRATION < 5)
                 SSDP_EXPIRATION = 5;
 
-            __NotifyCheck(NotifyTimer);
-
-            /*
-            int MinVal = (int)((double)SSDP_EXPIRATION * 0.25 * 1000);
-            int MaxVal = (int)((double)SSDP_EXPIRATION * 0.45 * 1000);
-            NotifyTimer.Interval = RND.Next(MinVal, MaxVal);
-            NotifyTimer.AutoReset = true;
-            NotifyTimer.Start();
-            */
             NetInfo = new NetworkInfo();
             SetupSessions();
         }
@@ -154,10 +143,6 @@ namespace OpenSource.UPnP
 
         private void SetupSessions()
         {
-            const int SIO_UDP_CONNRESET = -1744830452;
-            byte[] inValue = new byte[] { 0, 0, 0, 0 };     // == false
-            byte[] outValue = new byte[] { 0, 0, 0, 0 };    // initialize to 0
-
             IPAddress[] ips = NetInfo.GetLocalAddresses();
             foreach (IPAddress addr in ips)
             {
@@ -167,19 +152,14 @@ namespace OpenSource.UPnP
                     {
                         try
                         {
+
+                            // IPV4
                             if (addr.AddressFamily == AddressFamily.InterNetwork)
                             {
                                 UdpClient session = new UdpClient(AddressFamily.InterNetwork);
                                 try
                                 {
                                     session.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                                }
-                                catch (SocketException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-                                }
-                                try
-                                {
                                     session.ExclusiveAddressUse = false;
                                 }
                                 catch (SocketException ex)
@@ -187,60 +167,33 @@ namespace OpenSource.UPnP
                                     session.Client.Close();
                                     OpenSource.Utilities.EventLogger.Log(ex);
                                 }
-                                if (!Utils.IsMono())
-                                    session.Client.Bind(new IPEndPoint(addr, 1900));
-                                else
+
+// TODO: commented because not working with dotnet >= 6
+//       only binding all addresses will make UDP work properly (event-driven)
+//                                if (!Utils.IsMono())
+//                                    session.Client.Bind(new IPEndPoint(addr, 1900));
+//                                else
                                     session.Client.Bind(new IPEndPoint(IPAddress.Any, 1900));
+
                                 session.EnableBroadcast = true;
                                 session.JoinMulticastGroup(Utils.UpnpMulticastV4Addr, addr);
-                                try
-                                {
-//                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
-session.Client.Disconnect(false);
-                                }
-                                catch (SocketException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-//                                    session.Client.Close();
-                                }
-#if NET6_0_OR_GREATER
-                                catch (NotSupportedException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-//                                    session.Client.Close();
-                                }
-#endif
-                                session.BeginReceive(new AsyncCallback(OnReceiveSink), new object[2] { session, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
+                                session.BeginReceive(OnReceiveSink, new object[2] { session, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
                                 sessions[addr] = session;
 
                                 UdpClient usession = new UdpClient(AddressFamily.InterNetwork);
                                 usession.Client.Bind(new IPEndPoint(addr, 0));
-                                try
-                                {
-//                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
-session.Client.Disconnect(false);
-                                }
-                                catch (SocketException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-//                                    usession.Client.Close();
-                                }
-#if NET6_0_OR_GREATER
-                                catch (NotSupportedException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-//                                    session.Client.Close();
-                                }
-#endif
-                                usession.BeginReceive(new AsyncCallback(OnReceiveSink), new object[2] { usession, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
+
+                                usession.BeginReceive(OnReceiveSink, new object[2] { usession, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
                                 usessions[addr] = usession;
                             }
+                            
+                            // IPV6
                             if (addr.AddressFamily == AddressFamily.InterNetworkV6)
                             {
-                                UdpClient session = new UdpClient(AddressFamily.InterNetworkV6);
+                                UdpClient sessionIPv6 = new UdpClient(AddressFamily.InterNetworkV6);
                                 try
                                 {
-                                    session.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                                    sessionIPv6.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                                 }
                                 catch (SocketException ex)
                                 {
@@ -248,63 +201,32 @@ session.Client.Disconnect(false);
                                 }
                                 try
                                 {
-                                    session.ExclusiveAddressUse = false;
+                                    sessionIPv6.ExclusiveAddressUse = false;
                                 }
                                 catch (SocketException ex)
                                 {
                                     OpenSource.Utilities.EventLogger.Log(ex);
                                 }
-                                if (!Utils.IsMono())
-                                    session.Client.Bind(new IPEndPoint(addr, 1900));
-                                else
-                                    session.Client.Bind(new IPEndPoint(IPAddress.IPv6Any, 1900));
-                                session.EnableBroadcast = true;
+//                                if (!Utils.IsMono())
+//                                    session.Client.Bind(new IPEndPoint(addr, 1900));
+//                                else
+                                    sessionIPv6.Client.Bind(new IPEndPoint(IPAddress.IPv6Any, 1900));
+                                sessionIPv6.EnableBroadcast = true;
                                 if (addr.IsIPv6LinkLocal)
-                                    session.JoinMulticastGroup((int)addr.ScopeId, Utils.UpnpMulticastV6Addr2);
+                                    sessionIPv6.JoinMulticastGroup((int)addr.ScopeId, Utils.UpnpMulticastV6Addr2);
                                 else
-                                    session.JoinMulticastGroup((int)addr.ScopeId, Utils.UpnpMulticastV6Addr1);
-                                try
-                                {
-//                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
-session.Client.Disconnect(false);
-                                }
-                                catch (SocketException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-//                                    session.Close();
-                                }
-#if NET6_0_OR_GREATER
-                                catch (NotSupportedException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-//                                    session.Client.Close();
-                                }
-#endif
-                                session.BeginReceive(new AsyncCallback(OnReceiveSink), new object[2] { session, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
-                                sessions[addr] = session;
+                                    sessionIPv6.JoinMulticastGroup((int)addr.ScopeId, Utils.UpnpMulticastV6Addr1);
 
-                                UdpClient usession = new UdpClient(AddressFamily.InterNetworkV6);
-                                usession.Client.Bind(new IPEndPoint(addr, 0));
-                                try
-                                {
-//                                    session.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
-session.Client.Disconnect(false);
-                                }
-                                catch (SocketException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-//                                    usession.Close();
-                                }
-#if NET6_0_OR_GREATER
-                                catch (NotSupportedException ex)
-                                {
-                                    OpenSource.Utilities.EventLogger.Log(ex);
-//                                    session.Client.Close();
-                                }
-#endif
-                                usession.BeginReceive(new AsyncCallback(OnReceiveSink), new object[2] { usession, new IPEndPoint(addr, ((IPEndPoint)session.Client.LocalEndPoint).Port) });
-                                usessions[addr] = usession;
+                                sessionIPv6.BeginReceive(OnReceiveSink, new object[2] { sessionIPv6, new IPEndPoint(addr, ((IPEndPoint)sessionIPv6.Client.LocalEndPoint).Port) });
+                                sessions[addr] = sessionIPv6;
+
+                                UdpClient usessionIPv6 = new UdpClient(AddressFamily.InterNetworkV6);
+                                usessionIPv6.Client.Bind(new IPEndPoint(addr, 0));
+
+                                usessionIPv6.BeginReceive(OnReceiveSink, new object[2] { usessionIPv6, new IPEndPoint(addr, ((IPEndPoint)sessionIPv6.Client.LocalEndPoint).Port) });
+                                usessions[addr] = usessionIPv6;
                             }
+
                         }
                         catch (SocketException ex)
                         {
@@ -340,7 +262,7 @@ session.Client.Disconnect(false);
                 {
                     OpenSource.Utilities.EventLogger.Log(ex);
                 }
-                session.BeginReceive(new AsyncCallback(OnReceiveSink), args);
+                session.BeginReceive(OnReceiveSink, args);
             }
             catch (Exception ex)
             {
@@ -349,17 +271,6 @@ session.Client.Disconnect(false);
                 if (sessions.ContainsKey(local.Address) == true)
                     sessions.Remove(local.Address);
             }
-        }
-
-        private void __NotifyCheck(SafeTimer_SINGLE sender)
-        {
-            if (OnRefresh != null)
-                OnRefresh();
-            int MinVal = (int)((double)SSDP_EXPIRATION * 0.25 * 1000);
-            int MaxVal = (int)((double)SSDP_EXPIRATION * 0.45 * 1000);
-            sender.SetTimer(RND.Next(MinVal, MaxVal), __NotifyCheck);
-            //sender.SetTimer(RND.Next(MinVal, MaxVal), __NotifyCheck);
-            //NotifyTimer.Interval = RND.Next(MinVal, MaxVal);
         }
 
         /// <summary>
