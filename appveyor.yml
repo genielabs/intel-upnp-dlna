@@ -1,6 +1,6 @@
 version: 1.0.{build}
-image: Visual Studio 2022
-configuration: Debug
+image: Visual Studio 2026
+configuration: Release
 before_build:
   - nuget restore
 build:
@@ -9,7 +9,7 @@ build:
 test:
   assemblies:
     only:
-      - .\UPnP\bin\Debug\netstandard2.0\UPnP.dll
+      - .\UPnP\bin\Debug\net10.0\UPnP.dll
 after_test:
   - ps: .\UPnP\nuget_pack.ps1
 artifacts:
