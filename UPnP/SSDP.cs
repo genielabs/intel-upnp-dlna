@@ -18,8 +18,8 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
-using Intel.UPNP;
 using System.Linq;
 
 namespace OpenSource.UPnP
@@ -109,7 +109,11 @@ namespace OpenSource.UPnP
 
         public void Dispose()
         {
-            var keys = sessions.Keys.Cast<IPAddress>().ToList();
+            List<IPAddress> keys;
+            lock (usessions.SyncRoot)
+            {
+                keys = sessions.Keys.Cast<IPAddress>().ToList();
+            }
             foreach (var s in keys)
             {
                 var c = (UdpClient)sessions[s];
@@ -119,10 +123,14 @@ namespace OpenSource.UPnP
                 }
                 catch
                 {
+                    // ignored
                 }
             }
             sessions.Clear();
-            keys = usessions.Keys.Cast<IPAddress>().ToList();
+            lock (usessions.SyncRoot)
+            {
+                keys = usessions.Keys.Cast<IPAddress>().ToList();
+            }
             foreach (var s in keys)
             {
                 var c = (UdpClient)usessions[s];
@@ -132,6 +140,7 @@ namespace OpenSource.UPnP
                 }
                 catch
                 {
+                    // ignored
                 }
             }
             usessions.Clear();

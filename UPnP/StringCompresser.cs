@@ -214,7 +214,7 @@ namespace OpenSource.Utilities
                             buf.Write(new byte[2]{ 0, 0 }, 0, 2);
                         }
                         nblock = (byte)tmp.Length;
-                        buf.Write(BitConverter.GetBytes(nblock), 0, 1);
+                        buf.Write(BitConverter.GetBytes((short)nblock), 0, 1);
                         buf.Write(tmp.ToArray(), 0, (int)tmp.Length);
                         tmp = new MemoryStream();
                         UnCompressBlock = true;
@@ -270,7 +270,7 @@ namespace OpenSource.Utilities
                     buf.Write(new byte[2]{ 0, 0 }, 0, 2);
                 }
                 nblock = (byte)tmp.Length;
-                buf.Write(BitConverter.GetBytes(nblock), 0, 1);
+                buf.Write(BitConverter.GetBytes((short)nblock), 0, 1);
                 buf.Write(tmp.ToArray(), 0, (int)tmp.Length);
                 tmp = new MemoryStream();
                 UnCompressBlock = true;
@@ -282,7 +282,7 @@ namespace OpenSource.Utilities
                     buf.Write(new byte[2]{ 0, 0 }, 0, 2);
                 }
                 nblock = (byte)(inbuf.Length - currentOffset);
-                buf.Write(BitConverter.GetBytes(nblock), 0, 1);
+                buf.Write(BitConverter.GetBytes((short)nblock), 0, 1);
                 buf.Write(inbuf, currentOffset, inbuf.Length - currentOffset);
                 UnCompressBlock = true;
             }

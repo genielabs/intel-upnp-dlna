@@ -3,8 +3,8 @@
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
-    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10</LangVersion>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\UPnP\UPnP.csproj" />
