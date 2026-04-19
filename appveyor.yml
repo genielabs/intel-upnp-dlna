@@ -1,5 +1,9 @@
 version: 1.0.{build}
-image: Visual Studio 2026
+image: Visual Studio 2022
+install:
+  - ps: |
+      Invoke-WebRequest -Uri 'https://dot.net/v1/dotnet-install.ps1' -UseBasicParsing -OutFile "$env:temp\dotnet-install.ps1"
+      & $env:temp\dotnet-install.ps1 -Architecture x64 -Version '10.0.100' -InstallDir "$env:ProgramFiles\dotnet"
 configuration: Release
 before_build:
   - nuget restore
