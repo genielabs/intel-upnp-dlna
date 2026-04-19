@@ -1,14 +1,15 @@
 $project = "UPnP"
-$projectPath = (split-path -parent $MyInvocation.MyCommand.Definition) + "\$project\$project.csproj"
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$projectPath = Join-Path $scriptDir "$project.csproj"
+
 $versionStr = $env:APPVEYOR_REPO_TAG_NAME
 
 if (-not [string]::IsNullOrEmpty($versionStr)) {
-  # Rimuoviamo la 'v' iniziale se presente (es: v1.2.0 -> 1.2.0)
   $cleanVersion = $versionStr.TrimStart('v')
   
   Write-Host "Packing version $cleanVersion using dotnet pack..."
+  Write-Host "Target project: $projectPath"
 
-  # Passiamo la versione direttamente a dotnet pack senza toccare il file .csproj
   & dotnet pack $projectPath -c Release -o . /p:Version=$cleanVersion --verbosity normal
   
   if ($LASTEXITCODE -ne 0) {
