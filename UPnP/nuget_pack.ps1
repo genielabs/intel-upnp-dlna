@@ -10,7 +10,7 @@ if (-not [string]::IsNullOrEmpty($versionStr)) {
   Write-Host "Packing version $cleanVersion using dotnet pack..."
   Write-Host "Target project: $projectPath"
 
-  & dotnet pack $projectPath -c Release -o . /p:Version=$cleanVersion --verbosity normal
+  & dotnet pack $projectPath -c Release -o . /p:Version=$cleanVersion --no-build --verbosity normal 2>&1 | Out-Null
   
   if ($LASTEXITCODE -ne 0) {
       Write-Error "dotnet pack failed with exit code $LASTEXITCODE"
