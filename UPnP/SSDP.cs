@@ -109,38 +109,51 @@ namespace OpenSource.UPnP
 
         public void Dispose()
         {
-            List<IPAddress> keys;
-            lock (usessions.SyncRoot)
+            List<IPAddress> keys = new List<IPAddress>();
+            lock (sessions.SyncRoot)
             {
-                keys = sessions.Keys.Cast<IPAddress>().ToList();
+                foreach (IPAddress key in sessions.Keys)
+                {
+                    keys.Add(key);
+                }
             }
-            foreach (var s in keys)
+            foreach (IPAddress s in keys)
             {
                 var c = (UdpClient)sessions[s];
-                try
+                if (c != null)
                 {
-                    c.Close();
-                }
-                catch
-                {
-                    // ignored
+                    try
+                    {
+                        c.Close();
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
-            sessions.Clear();
+            sessions.Clear(); 
+            keys.Clear();
             lock (usessions.SyncRoot)
             {
-                keys = usessions.Keys.Cast<IPAddress>().ToList();
+                foreach (IPAddress key in usessions.Keys)
+                {
+                    keys.Add(key);
+                }
             }
-            foreach (var s in keys)
+            foreach (IPAddress s in keys)
             {
                 var c = (UdpClient)usessions[s];
-                try
+                if (c != null)
                 {
-                    c.Close();
-                }
-                catch
-                {
-                    // ignored
+                    try
+                    {
+                        c.Close();
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
             }
             usessions.Clear();
