@@ -3712,23 +3712,29 @@ namespace OpenSource.UPnP
                 }
             }
 
-            foreach (UPnPArgument _ARG in VarList)
-            {
-                UPnPStateVariable V = this.GetStateVariableObject(MethodName, _ARG.Name);
-                try
-                {
-                    V.Validate(UPnPService.CreateObjectInstance(V.GetNetType(), (string)_ARG.DataValue));
-                }
-                catch (Exception ex)
-                {
-                    throw (new UPnPCustomException(402, "Argument [" + _ARG.Name + "] : " + ex.Message));
-                }
-            }
-
             UPnPAction A = this.GetAction(MethodName);
             if (A == null)
             {
                 throw (new UPnPCustomException(401, "Invalid Action: " + MethodName));
+            }
+
+            for (int i = VarList.Count - 1; i >= 0; i--)
+            {
+                UPnPStateVariable V = this.GetStateVariableObject(MethodName, ((UPnPArgument)VarList[i]).Name);
+                if (V == null)
+                {
+                  VarList.RemoveAt(i);
+                  continue;
+                }
+
+                try
+                {
+                    V.Validate(UPnPService.CreateObjectInstance(V.GetNetType(), (string)((UPnPArgument)VarList[i]).DataValue));
+                }
+                catch (Exception ex)
+                {
+                    throw (new UPnPCustomException(402, "Argument [" + ((UPnPArgument)VarList[i]).Name + "] : " + ex.Message));
+                }
             }
 
             if (A.SpecialCase != null)

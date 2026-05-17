@@ -1502,7 +1502,14 @@ namespace OpenSource.UPnP
                 msg.AddTag("Server", "Windows NT/5.0, UPnP/1.0");
                 msg.AddTag("EXT", "");
                 msg.AddTag("Cache-Control", "max-age=" + ExpirationTimeout.ToString());
-                msg.AddTag("ST", st);
+                if (ST == "upnp:rootdevice")
+                {
+                    msg.AddTag("ST", "upnp:rootdevice");
+                }
+                else
+                {
+                    msg.AddTag("ST", DeviceURN);
+                }
                 msg.AddTag("USN", "uuid:" + UniqueDeviceName + "::" + st);
                 if (UserAgentTag != null)
                 {
